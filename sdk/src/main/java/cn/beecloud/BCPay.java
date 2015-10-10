@@ -701,7 +701,7 @@ public class BCPay {
 			bcOrder.setChannel(bill.get("channel").toString());
 			bcOrder.setSpayResult(((Boolean)bill.get("spay_result")));
 			bcOrder.setSubChannel((bill.get("sub_channel").toString()));
-			bcOrder.setCreatedTime((Long)bill.get("created_time"));
+			bcOrder.setCreatedTime((Long)bill.get("create_time"));
 			if (bill.containsKey("trade_no") && bill.get("trade_no") != null) {
 				bcOrder.setChannelTradeNo(bill.get("trade_no").toString());
 			}
@@ -729,7 +729,7 @@ public class BCPay {
 	    	bcRefund.setChannel(refund.get("channel").toString());
 	    	bcRefund.setSubChannel(refund.get("sub_channel").toString());
 	    	bcRefund.setFinished((Boolean)refund.get("finish"));
-	    	bcRefund.setCreatedTime((Long)refund.get("created_time"));
+	    	bcRefund.setCreatedTime((Long)refund.get("create_time"));
 	    	bcRefund.setOptional(refund.get("optional").toString());
 	    	bcRefund.setRefunded((Boolean)refund.get("result"));
 	    	bcRefund.setTitle(refund.get("title").toString());
@@ -771,7 +771,7 @@ public class BCPay {
 			bcOrder.setChannel(bill.get("channel").toString());
 			bcOrder.setSpayResult(((Boolean)bill.get("spay_result")));
 			bcOrder.setSubChannel((bill.get("sub_channel").toString()));
-			bcOrder.setCreatedTime((Long)bill.get("created_time"));
+			bcOrder.setCreatedTime((Long)bill.get("create_time"));
 			if (bill.containsKey("trade_no") && bill.get("trade_no") != null) {
 				bcOrder.setChannelTradeNo(bill.get("trade_no").toString());
 			}
@@ -787,7 +787,7 @@ public class BCPay {
     	bcRefund.setChannel(refund.get("channel").toString());
     	bcRefund.setSubChannel(refund.get("sub_channel").toString());
     	bcRefund.setFinished((Boolean)refund.get("finish"));
-    	bcRefund.setCreatedTime((Long)refund.get("created_time"));
+    	bcRefund.setCreatedTime((Long)refund.get("create_time"));
     	bcRefund.setOptional(refund.get("optional").toString());
     	bcRefund.setRefunded((Boolean)refund.get("result"));
     	bcRefund.setTitle(refund.get("title").toString());
