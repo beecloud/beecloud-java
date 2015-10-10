@@ -12,8 +12,6 @@ public class BCOrderBean {
 	
 	private String title;
 	
-	private String desc;
-	
 	private String channel;
 	
 	private String subChannel;
@@ -26,12 +24,10 @@ public class BCOrderBean {
     
 	private long createdTime;
 	
-	private long updateTime;
-	
 	private String dateTime;
 	
-	private String updateDateTime;
-
+	private String messageDetail = "未知";
+	
 	public String getBillNo() {
 		return billNo;
 	}
@@ -54,14 +50,6 @@ public class BCOrderBean {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public String getDesc() {
-		return desc;
-	}
-
-	public void setDesc(String desc) {
-		this.desc = desc;
 	}
 
 	public boolean isSpayResult() {
@@ -96,22 +84,6 @@ public class BCOrderBean {
 		this.channel = channel;
 	}
 	
-	public long getUpdateTime() {
-		return updateTime;
-	}
-
-	public void setUpdateTime(long updateTime) {
-		this.updateTime = updateTime;
-	}
-
-	public String getUpdateDateTime() {
-		return updateDateTime;
-	}
-
-	public void setUpdateDateTime(String updateDateTime) {
-		this.updateDateTime = updateDateTime;
-	}
-
 	public String getSubChannel() {
 		return subChannel;
 	}
@@ -134,5 +106,13 @@ public class BCOrderBean {
 
 	public void setOptional(String optional) {
 		this.optional = optional;
+	}
+
+	public String getMessageDetail() {
+		return messageDetail;
+	}
+
+	public void setMessageDetail(String messageDetail) {
+		this.messageDetail = messageDetail;
 	}
 }

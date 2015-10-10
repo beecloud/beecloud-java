@@ -23,6 +23,8 @@ public class BCQueryParameter {
 	
 	private Integer limit;
 	
+	private Boolean needDetail;
+	
 	/**
 	 * 访问字段 {@link #channel}
 	 */
@@ -138,5 +140,20 @@ public class BCQueryParameter {
 	 */
 	public void setLimit(Integer limit) {
 		this.limit = limit;
+	}
+	
+	/**
+	 * 访问字段 {@link #needDetail}
+	 */
+	public Boolean getNeedDetail() {
+		return needDetail;
+	}
+	
+	/**
+	 * @param needDetail 是否需要返回渠道详细信息，不返回可减少网络开销
+	 * (选填)	
+	 */
+	public void setNeedDetail(Boolean needDetail) {
+		this.needDetail = needDetail;
 	}
 }

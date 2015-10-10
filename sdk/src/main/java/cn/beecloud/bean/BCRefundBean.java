@@ -28,11 +28,9 @@ public class BCRefundBean {
 	
 	private long createdTime;
 	
-	private long updatedTime;
-	
 	private String dateTime;
 	
-	private String updateDateTime;
+	private String messageDetail = "未知";
 	
 	public String getBillNo() {
 		return billNo;
@@ -114,22 +112,6 @@ public class BCRefundBean {
 		this.createdTime = createdTime;
 	}
 
-	public long getUpdatedTime() {
-		return updatedTime;
-	}
-
-	public void setUpdatedTime(long updatedTime) {
-		this.updatedTime = updatedTime;
-	}
-
-	public String getUpdateDateTime() {
-		return updateDateTime;
-	}
-
-	public void setUpdateDateTime(String updateDateTime) {
-		this.updateDateTime = updateDateTime;
-	}
-
 	public String getOptional() {
 		return optional;
 	}
@@ -144,5 +126,13 @@ public class BCRefundBean {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public String getMessageDetail() {
+		return messageDetail;
+	}
+
+	public void setMessageDetail(String messageDetail) {
+		this.messageDetail = messageDetail;
 	}
 }

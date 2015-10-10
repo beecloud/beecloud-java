@@ -53,9 +53,9 @@
 %>
 	
 <c:if test="${refund != null}">
-	<table border="3" class="table"><tr><th>订单号</th><th>退款单号</th><th>标题</th><th>订单金额</th><th>退款金额</th><th>渠道</th><th>子渠道</th><th>附加数据</th><th>是否结束</th><th>是否退款</th><th>退款创建时间</th><th>退款更新时间</th>
+	<table border="3" class="table"><tr><th>订单号</th><th>退款单号</th><th>标题</th><th>订单金额</th><th>退款金额</th><th>渠道</th><th>子渠道</th><th>附加数据</th><th>渠道详细信息</th><th>是否结束</th><th>是否退款</th><th>退款创建时间</th><th>退款更新时间</th>
 	<c:if test="${fn:containsIgnoreCase(refund.channel,'WX') || fn:containsIgnoreCase(refund.channel,'YEE') || fn:containsIgnoreCase(refund.channel,'BD') || fn:containsIgnoreCase(refund.channel,'KUAIQIAN')}"><th>退款状态查询</th></c:if></tr>
-		<tr align="center" ><td>${refund.billNo}</td><td>${refund.refundNo}</td><td>${refund.title}</td><td>${refund.totalFee}</td><td>${refund.refundFee}</td><td>${refund.channel}</td><td>${refund.subChannel}</td><td>${refund.optional}</td><td>${refund.finished}</td><td>${refund.refunded}</td><td>${refund.dateTime}</td><td>${refund.updateDateTime}</td>
+		<tr align="center" ><td>${refund.billNo}</td><td>${refund.refundNo}</td><td>${refund.title}</td><td>${refund.totalFee}</td><td>${refund.refundFee}</td><td>${refund.channel}</td><td>${refund.subChannel}</td><td>${refund.optional}</td><td>${refund.messageDetail}</td><td>${refund.finished}</td><td>${refund.refunded}</td><td>${refund.dateTime}</td><td>${refund.updateDateTime}</td>
 		<c:if test="${fn:containsIgnoreCase(refund.channel,'WX') || fn:containsIgnoreCase(refund.channel,'YEE') || fn:containsIgnoreCase(refund.channel,'BD') || fn:containsIgnoreCase(refund.channel,'KUAIQIAN')}">
 		<td>
 		<input class="button" type="button" onclick="queryStatus('${refund.channel}','${refund.refundNo}')" value="查询"/>
@@ -65,8 +65,8 @@
 	</table>
 </c:if>
 <c:if test="${bill != null}">
-	<table border="3" class="table"><tr><th>订单号</th><th>标题</th><th>订单金额</th><th>渠道</th><th>子渠道</th><th>渠道交易号</th><th>附加数据</th><th>是否支付成功</th><th>订单创建时间</th><th>订单更新时间</th></tr>
-		<tr align="center" ><td>${bill.billNo}</td><td>${bill.title}</td><td>${bill.totalFee}</td><td>${bill.channel}</td><td>${bill.subChannel}</td><td>${bill.channelTradeNo}</td><td>${bill.optional}</td><td>${bill.spayResult}</td><td>${bill.dateTime}</td><td>${bill.updateDateTime}</td>
+	<table border="3" class="table"><tr><th>订单号</th><th>标题</th><th>订单金额</th><th>渠道</th><th>子渠道</th><th>渠道交易号</th><th>附加数据</th><th>渠道详细信息</th><th>是否支付成功</th><th>订单创建时间</th><th>订单更新时间</th></tr>
+		<tr align="center" ><td>${bill.billNo}</td><td>${bill.title}</td><td>${bill.totalFee}</td><td>${bill.channel}</td><td>${bill.subChannel}</td><td>${bill.channelTradeNo}</td><td>${bill.optional}</td><td>${bill.messageDetail}</td><td>${bill.spayResult}</td><td>${bill.dateTime}</td><td>${bill.updateDateTime}</td>
 		<c:if test="${bill.spayResult == true}">
 			<td align="center" >
 				<input class="button" type="button" onclick="startRefund('${bill.billNo}', ${bill.totalFee}, '${bill.channel}')" value="退款"/>

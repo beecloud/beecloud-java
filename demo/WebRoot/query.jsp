@@ -163,6 +163,7 @@
 		if (querytype.equals("aliQuery")) {
 			BCQueryParameter param = new BCQueryParameter();
 			param.setChannel(PAY_CHANNEL.ALI);
+			param.setNeedDetail(true);
 			
 			bcQueryResult = BCPay.startQueryBill(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
@@ -274,9 +275,9 @@
 	}
 %>
 <c:if test="${billSize != null and billSize !=0}">
-	<table border="3" class="table"><tr><th>订单号</th><th>总金额</th><th>标题</th><th>渠道</th><th>已付款</th><th>创建时间</th><th>发起退款</th></tr>
+	<table border="3" class="table"><tr><th>订单号</th><th>总金额</th><th>标题</th><th>渠道交易号</th><th>渠道</th><th>子渠道</th><th>已付款</th><th>可选项</th><th>渠道详细信息</th><th>创建时间</th><th>发起退款</th></tr>
 		<c:forEach var="bill" items="${bills}" varStatus="index"> 
-			<tr><td>${bill.billNo}</td><td>${bill.totalFee}</td><td>${bill.title}</td><td>${bill.channel}</td><td>${bill.spayResult}</td><td>${bill.dateTime}</td>
+			<tr><td>${bill.billNo}</td><td>${bill.totalFee}</td><td>${bill.title}</td><td>${bill.channelTradeNo}</td><td>${bill.channel}</td><td>${bill.subChannel}</td><td>${bill.spayResult}</td><td>${bill.optional}</td><td>${bill.messageDetail}</td><td>${bill.dateTime}</td>
 				<c:if test="${bill.spayResult == true && nochannel == null}">
 						<td align="center" >
 							<input class="button" type="button" onclick="startRefund('${bill.billNo}', ${bill.totalFee}, '${bill.channel}')" value="退款"/>
@@ -292,9 +293,9 @@
 	</table>
 </c:if>
 <c:if test="${refundSize != null and refundSize !=0}">
-	<table border="3" class="table"><tr><th>订单号</th><th>退款单号</th><th>订单金额</th><th>退款金额</th><th>渠道</th><th>是否结束</th><th>是否退款</th><th>退款创建时间</th><c:if test="${isWeChat != null}"><th>退款状态查询</th></c:if></tr>
+	<table border="3" class="table"><tr><th>订单号</th><th>退款单号</th><th>标题</th><th>订单金额</th><th>退款金额</th><th>渠道</th><th>子渠道</th><th>是否结束</th><th>是否退款</th><th>可选项</th><th>渠道详细信息</th><th>退款创建时间</th><c:if test="${isWeChat != null}"><th>退款状态查询</th></c:if></tr>
 		<c:forEach var="refund" items="${refundList}" varStatus="index"> 
-			<tr align="center" ><td>${refund.billNo}</td><td>${refund.refundNo}</td><td>${refund.totalFee}</td><td>${refund.refundFee}</td><td>${refund.channel}</td><td>${refund.finished}</td><td>${refund.refunded}</td><td>${refund.dateTime}</td>
+			<tr align="center" ><td>${refund.billNo}</td><td>${refund.refundNo}</td><td>${refund.title}</td><td>${refund.totalFee}</td><td>${refund.refundFee}</td><td>${refund.channel}</td><td>${refund.subChannel}</td><td>${refund.finished}</td><td>${refund.refunded}</td><td>${refund.optional}</td><td>${refund.messageDetail}</td><td>${refund.dateTime}</td>
 			<c:if test="${fn:containsIgnoreCase(refund.channel,'WX') || fn:containsIgnoreCase(refund.channel,'YEE') || fn:containsIgnoreCase(refund.channel,'BD') || fn:containsIgnoreCase(refund.channel,'KUAIQIAN')}">
 			<td>
 			<input class="button" type="button" onclick="queryStatus('${refund.channel}','${refund.refundNo}')" value="查询"/>

@@ -220,6 +220,7 @@ public class BCPay {
                                     && !StrUtil.empty(ret.get("bills"))) {
                         result.setBcOrders(generateBCOrderList((List<Map<String, Object>>)ret.get("bills")));
                     }
+                    result.setTotalCount((Integer)ret.get("count"));
                 } else {
                 	result.setErrMsg(ret.get("result_msg").toString());
                 	result.setErrDetail(ret.get("err_detail").toString());
@@ -344,6 +345,7 @@ public class BCPay {
                                      && ret.get("refunds") != null) {
                          result.setBcRefundList(generateBCRefundList((List<Map<String, Object>>)ret.get("refunds")));
                      }
+                     result.setTotalCount((Integer)ret.get("count"));
                  } else {
                  	result.setErrMsg(ret.get("result_msg").toString());
                  	result.setErrDetail(ret.get("err_detail").toString());
@@ -695,9 +697,17 @@ public class BCPay {
 			bcOrder.setTitle(bill.get("title").toString());
 			bcOrder.setChannel(bill.get("channel").toString());
 			bcOrder.setSpayResult(((Boolean)bill.get("spay_result")));
+			bcOrder.setSubChannel((bill.get("sub_channel").toString()));
 			bcOrder.setCreatedTime((Long)bill.get("created_time"));
+			if (bill.containsKey("trade_no") && bill.get("trade_no") != null) {
+				bcOrder.setChannelTradeNo(bill.get("trade_no").toString());
+			}
+			bcOrder.setOptional(bill.get("optional").toString());
 			bcOrder.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)bill.get("created_time")));
 			bcOrderList.add(bcOrder);
+			if (bill.containsKey("message_detail")) {
+				bcOrder.setMessageDetail(bill.get("message_detail").toString());
+			}
 		}
 		return bcOrderList;
 	}
@@ -713,14 +723,21 @@ public class BCPay {
 		for (Map refund : refundList){
 			BCRefundBean bcRefund = new BCRefundBean();
 			bcRefund.setBillNo(refund.get("bill_no").toString());
-			bcRefund.setRefundNo(refund.get("refund_no").toString());
-			bcRefund.setTotalFee(refund.get("total_fee").toString());
-			bcRefund.setRefundFee(refund.get("refund_fee").toString());
-			bcRefund.setChannel(refund.get("channel").toString());
-			bcRefund.setFinished((Boolean)refund.get("finish"));
-			bcRefund.setRefunded((Boolean)refund.get("result"));
-			bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)refund.get("created_time")));
-			bcRefundList.add(bcRefund);
+	    	bcRefund.setChannel(refund.get("channel").toString());
+	    	bcRefund.setSubChannel(refund.get("sub_channel").toString());
+	    	bcRefund.setFinished((Boolean)refund.get("finish"));
+	    	bcRefund.setCreatedTime((Long)refund.get("created_time"));
+	    	bcRefund.setOptional(refund.get("optional").toString());
+	    	bcRefund.setRefunded((Boolean)refund.get("result"));
+	    	bcRefund.setTitle(refund.get("title").toString());
+	    	bcRefund.setTotalFee(refund.get("total_fee").toString());
+	    	bcRefund.setRefundFee(refund.get("refund_fee").toString());
+	    	bcRefund.setRefundNo(refund.get("refund_no").toString());
+	    	bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)refund.get("created_time")));
+			if (refund.containsKey("message_detail")) {
+				bcRefund.setMessageDetail(refund.get("message_detail").toString());
+			}
+	    	bcRefundList.add(bcRefund);
 		}
 		return bcRefundList;
     }
@@ -751,15 +768,14 @@ public class BCPay {
 			bcOrder.setChannel(bill.get("channel").toString());
 			bcOrder.setSpayResult(((Boolean)bill.get("spay_result")));
 			bcOrder.setSubChannel((bill.get("sub_channel").toString()));
-			bcOrder.setCreatedTime((Long)bill.get("createdat"));
-			bcOrder.setUpdateTime((Long)bill.get("updatedat"));
-			if (bill.containsKey("channel_trade_no") && bill.get("channel_trade_no") != null) {
-				bcOrder.setChannelTradeNo(bill.get("channel_trade_no").toString());
+			bcOrder.setCreatedTime((Long)bill.get("created_time"));
+			if (bill.containsKey("trade_no") && bill.get("trade_no") != null) {
+				bcOrder.setChannelTradeNo(bill.get("trade_no").toString());
 			}
 			bcOrder.setOptional(bill.get("optional").toString());
-			bcOrder.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)bill.get("createdat")));
-			bcOrder.setUpdateDateTime(BCUtilPrivate.transferDateFromLongToString((Long)bill.get("updatedat")));
-		return bcOrder;
+			bcOrder.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)bill.get("created_time")));
+			bcOrder.setMessageDetail(bill.get("message_detail").toString());
+			return bcOrder;
 	}
     
     private static BCRefundBean generateBCRefund(Map<String, Object> refund) {
@@ -768,17 +784,15 @@ public class BCPay {
     	bcRefund.setChannel(refund.get("channel").toString());
     	bcRefund.setSubChannel(refund.get("sub_channel").toString());
     	bcRefund.setFinished((Boolean)refund.get("finish"));
-    	bcRefund.setCreatedTime((Long)refund.get("createdat"));
-    	bcRefund.setUpdatedTime((Long)refund.get("updatedat"));
+    	bcRefund.setCreatedTime((Long)refund.get("created_time"));
     	bcRefund.setOptional(refund.get("optional").toString());
     	bcRefund.setRefunded((Boolean)refund.get("result"));
     	bcRefund.setTitle(refund.get("title").toString());
     	bcRefund.setTotalFee(refund.get("total_fee").toString());
     	bcRefund.setRefundFee(refund.get("refund_fee").toString());
     	bcRefund.setRefundNo(refund.get("refund_no").toString());
-    	bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)refund.get("createdat")));
-    	bcRefund.setUpdateDateTime(BCUtilPrivate.transferDateFromLongToString((Long)refund.get("updatedat")));
-    	
+    	bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)refund.get("created_time")));
+    	bcRefund.setMessageDetail(refund.get("message_detail").toString());
     	return bcRefund;
     }
 }
