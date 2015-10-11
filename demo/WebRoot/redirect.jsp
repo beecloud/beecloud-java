@@ -81,7 +81,7 @@
 			
 			BCPayParameter param = new BCPayParameter(PAY_CHANNEL.ALI_WEB, 1, billNo, title);
 			param.setReturnUrl(aliReturnUrl);
-			param.setBillTimeout(120);
+			param.setBillTimeout(200);
 			param.setOptional(optional);
 			
 			bcPayResult = BCPay.startBCPay(param);
@@ -117,7 +117,7 @@
 		} else if (type.equals("alipayWAP")) {
 			
 			BCPayParameter param = new BCPayParameter(PAY_CHANNEL.ALI_WAP, 1, billNo, title);
-			param.setBillTimeout(120);
+			param.setBillTimeout(140);
             
 			bcPayResult = BCPay.startBCPay(param);
             if (bcPayResult.getType().ordinal() == 0) {

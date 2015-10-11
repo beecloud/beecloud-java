@@ -30,7 +30,7 @@ public class BCRefundBean {
 	
 	private String dateTime;
 	
-	private String messageDetail = "未知";
+	private String messageDetail = "不显示";
 	
 	public String getBillNo() {
 		return billNo;

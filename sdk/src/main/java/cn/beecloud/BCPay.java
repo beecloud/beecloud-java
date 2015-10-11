@@ -706,7 +706,7 @@ public class BCPay {
 				bcOrder.setChannelTradeNo(bill.get("trade_no").toString());
 			}
 			bcOrder.setOptional(bill.get("optional").toString());
-			bcOrder.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)bill.get("created_time")));
+			bcOrder.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)bill.get("create_time")));
 			bcOrderList.add(bcOrder);
 			if (bill.containsKey("message_detail")) {
 				bcOrder.setMessageDetail(bill.get("message_detail").toString());
@@ -736,7 +736,7 @@ public class BCPay {
 	    	bcRefund.setTotalFee(refund.get("total_fee").toString());
 	    	bcRefund.setRefundFee(refund.get("refund_fee").toString());
 	    	bcRefund.setRefundNo(refund.get("refund_no").toString());
-	    	bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)refund.get("created_time")));
+	    	bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)refund.get("create_time")));
 			if (refund.containsKey("message_detail")) {
 				bcRefund.setMessageDetail(refund.get("message_detail").toString());
 			}
@@ -776,7 +776,7 @@ public class BCPay {
 				bcOrder.setChannelTradeNo(bill.get("trade_no").toString());
 			}
 			bcOrder.setOptional(bill.get("optional").toString());
-			bcOrder.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)bill.get("created_time")));
+			bcOrder.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)bill.get("create_time")));
 			bcOrder.setMessageDetail(bill.get("message_detail").toString());
 			return bcOrder;
 	}
@@ -794,7 +794,7 @@ public class BCPay {
     	bcRefund.setTotalFee(refund.get("total_fee").toString());
     	bcRefund.setRefundFee(refund.get("refund_fee").toString());
     	bcRefund.setRefundNo(refund.get("refund_no").toString());
-    	bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)refund.get("created_time")));
+    	bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long)refund.get("create_time")));
     	bcRefund.setMessageDetail(refund.get("message_detail").toString());
     	return bcRefund;
     }
