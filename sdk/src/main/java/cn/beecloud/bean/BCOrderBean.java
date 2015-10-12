@@ -28,6 +28,8 @@ public class BCOrderBean {
 	
 	private String messageDetail = "不显示";
 	
+	private boolean refundResult;
+	
 	public String getBillNo() {
 		return billNo;
 	}
@@ -114,5 +116,13 @@ public class BCOrderBean {
 
 	public void setMessageDetail(String messageDetail) {
 		this.messageDetail = messageDetail;
+	}
+
+	public boolean isRefundResult() {
+		return refundResult;
+	}
+
+	public void setRefundResult(boolean refundResult) {
+		this.refundResult = refundResult;
 	}
 }
