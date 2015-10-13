@@ -303,7 +303,7 @@
 			<tr align="center" ><td>${refund.billNo}</td><td>${refund.refundNo}</td><td>${refund.title}</td><td>${refund.totalFee}</td><td>${refund.refundFee}</td><td>${refund.channel}</td><td>${refund.subChannel}</td><td>${refund.finished}</td><td>${refund.refunded}</td><td>${refund.optional}</td><td>${refund.messageDetail}</td><td>${refund.dateTime}</td>
 			<c:if test="${fn:containsIgnoreCase(refund.channel,'WX') || fn:containsIgnoreCase(refund.channel,'YEE') || fn:containsIgnoreCase(refund.channel,'BD') || fn:containsIgnoreCase(refund.channel,'KUAIQIAN')}">
 			<td>
-			<input class="button" type="button" onclick="queryStatus('${refund.subChannel}','${refund.refundNo}')" value="查询"/>
+			<input class="button" type="button" onclick="queryStatus('${refund.channel}','${refund.refundNo}')" value="查询"/>
 			</td>
 			</c:if>
 			</tr>
