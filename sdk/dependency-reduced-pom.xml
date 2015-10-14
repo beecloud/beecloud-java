@@ -4,7 +4,7 @@
   <groupId>cn.beecloud</groupId>
   <artifactId>beecloud-java-sdk</artifactId>
   <name>java-sdk</name>
-  <version>2.3.0</version>
+  <version>2.3.1</version>
   <description>java-sdk is the payment integration of beecloud based on Java language.</description>
   <url>https://beecloud.cn/download/java.php</url>
   <developers>

@@ -4,16 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 
 /**
  * @author Ray
  * Date: 15/7/08
  */
 public class BCCache {
-	
-	private static Logger logger = Logger.getLogger(BCCache.class);
 	
     private static String appID = null;
     private static String appSecret = null;
@@ -70,7 +66,6 @@ public class BCCache {
     		try {
 				prop.load(inputStream);
 				String host = prop.getProperty("backend");
-				logger.info("host:" + host);
 				if (!host.trim().equals("")) {
 					apiHostArray[0] = "http://" + host + ":8080";
 					apiHostArray[1] = "http://" + host + ":8080";
@@ -78,12 +73,10 @@ public class BCCache {
 					apiHostArray[3] = "http://" + host + ":8080";
 				}
 			} catch (IOException e) {
-				logger.info(e.getMessage());
 				e.printStackTrace();
 			}
     		
     	}
-    	logger.info("hosts:" + apiHostArray);
     	return apiHostArray;
     	
     	
