@@ -176,9 +176,69 @@ public class BCPay {
          }
          return result;
     }
-
-
+    
     /**
+     * @param para {@link BCQueryParameter}订单总数查询参数
+     * @return 订单总数查询返回的结果
+     */
+    public static BCQueryResult startQueryBillCount(BCQueryParameter para) {
+    	
+    	BCQueryResult result;
+    	
+    	result = ValidationUtil.validateQueryBill(para);
+    	
+    	if (result.getType().ordinal() != 0) {
+    		return result;
+    	}
+    	 
+    	Map<String, Object> param = new HashMap<String, Object>();
+        buildQueryCountParam(param, para);
+         
+        result = new BCQueryResult();
+    	
+    	Client client = BCAPIClient.client;
+    	  
+    	StringBuilder sb = new StringBuilder();   
+        sb.append(BCUtilPrivate.getkApiQueryBillCount());
+        
+        try {
+            sb.append(URLEncoder.encode(
+                            JSONObject.fromObject(param).toString(), "UTF-8"));
+
+            WebTarget target = client.target(sb.toString());
+            Response response = target.request().get();
+            if (response.getStatus() == 200) {
+                Map<String, Object> ret = response.readEntity(Map.class);
+
+                boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+                                .toStr(ret.get("result_code")).equals("0"));
+
+                if (isSuccess) {
+                	result.setType(RESULT_TYPE.OK);
+                    if (ret.containsKey("count")
+                                    && !StrUtil.empty(ret.get("count"))) {
+                    	result.setTotalCount((Integer)ret.get("count"));
+                    }
+                } else {
+                	result.setErrMsg(ret.get("result_msg").toString());
+                	result.setErrDetail(ret.get("err_detail").toString());
+                	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+                }
+            } else {
+            	result.setErrMsg("Not correct response!");
+            	result.setErrDetail("Not correct response!");
+            	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+            }
+        } catch (Exception e) {
+        	result.setErrMsg("Network error!");
+        	result.setErrDetail(e.getMessage());
+        	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+        }
+    	return result;
+    }
+
+
+	/**
      * @param para {@link BCQueryParameter}订单查询参数
      * @return 订单查询返回的结果
      */
@@ -299,6 +359,70 @@ public class BCPay {
     	return result;
     }
     
+    /**
+     * @param para {@link BCRefundQueryParameter}退款总数查询参数
+     * @return 退款总数查询返回的结果
+     */
+    public static BCQueryResult startQueryRefundCount(BCRefundQueryParameter para) {
+    	
+    	BCQueryResult result;
+    	
+    	result = ValidationUtil.validateQueryRefund(para);
+    	
+    	if (result.getType().ordinal() != 0) {
+    		return result;
+    	}
+    	 
+    	Map<String, Object> param = new HashMap<String, Object>();
+        buildQueryCountParam(param, para);
+        if (para.getRefundNo() != null) {
+        	param.put("refund_no", para.getRefundNo());
+        }
+         
+        result = new BCQueryResult();
+    	
+    	Client client = BCAPIClient.client;
+    	  
+    	StringBuilder sb = new StringBuilder();   
+        sb.append(BCUtilPrivate.getkApiQueryRefundCount());
+        
+        try {
+            sb.append(URLEncoder.encode(
+                            JSONObject.fromObject(param).toString(), "UTF-8"));
+
+            WebTarget target = client.target(sb.toString());
+            Response response = target.request().get();
+            if (response.getStatus() == 200) {
+                Map<String, Object> ret = response.readEntity(Map.class);
+
+                boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+                                .toStr(ret.get("result_code")).equals("0"));
+
+                if (isSuccess) {
+                	result.setType(RESULT_TYPE.OK);
+                    if (ret.containsKey("count")
+                                    && !StrUtil.empty(ret.get("count"))) {
+                    	result.setTotalCount((Integer)ret.get("count"));
+                    }
+                } else {
+                	result.setErrMsg(ret.get("result_msg").toString());
+                	result.setErrDetail(ret.get("err_detail").toString());
+                	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+                }
+            } else {
+            	result.setErrMsg("Not correct response!");
+            	result.setErrDetail("Not correct response!");
+            	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+            }
+        } catch (Exception e) {
+        	result.setErrMsg("Network error!");
+        	result.setErrDetail(e.getMessage());
+        	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+        }
+    	return result;
+    }
+    
+    
 	/**
 	 * @param para {@link BCRefundQueryParameter}}
 	 * @return 退款查询返回的结果
@@ -314,9 +438,6 @@ public class BCPay {
 		result = new BCQueryResult();
 		
 		Map<String, Object> param = new HashMap<String, Object>();
-        param.put("app_id", BCCache.getAppID());
-        param.put("timestamp", System.currentTimeMillis());
-        param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
         buildQueryParam(param, para);
         if (para.getRefundNo() != null) {
         	param.put("refund_no", para.getRefundNo());
@@ -685,6 +806,30 @@ public class BCPay {
         }
 	}
     
+	/**
+     * Build Query Count parameters
+     * @param param to be built
+     * @param para used for building 
+     */
+	private static void buildQueryCountParam(Map<String, Object> param,
+			BCQueryParameter para) {
+    	param.put("app_id", BCCache.getAppID());
+        param.put("timestamp", System.currentTimeMillis());
+        param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
+        if (para.getChannel() != null) {
+    		param.put("channel", para.getChannel().toString());
+    	}
+        if (para.getBillNo() != null) {
+        	param.put("bill_no", para.getBillNo());
+        }
+        if (para.getStartTime() != null) {
+        	param.put("start_time", para.getStartTime().getTime());
+        }
+        if (para.getEndTime() != null) {
+       	 param.put("end_time", para.getEndTime().getTime());
+        }
+	}
+	
     /**
      * The method is used to generate Order list by query.
      * @param bills

@@ -40,6 +40,14 @@
 			param.setChannel(PAY_CHANNEL.ALI);
 			param.setNeedDetail(true);
 			
+			bcQueryResult = BCPay.startQueryRefundCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryRefund(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("refundList", bcQueryResult.getBcRefundList());
@@ -53,11 +61,18 @@
 			BCRefundQueryParameter param = new BCRefundQueryParameter();
 			param.setChannel(PAY_CHANNEL.WX);
 			
+			bcQueryResult = BCPay.startQueryRefundCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryRefund(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("refundList", bcQueryResult.getBcRefundList());
 				pageContext.setAttribute("refundSize", bcQueryResult.getBcRefundList().size());
-				pageContext.setAttribute("refundUpdate", true);
 			}else {
 				out.println(bcQueryResult.getErrMsg());
 				out.println(bcQueryResult.getErrDetail());
@@ -66,6 +81,14 @@
 			
 			BCRefundQueryParameter param = new BCRefundQueryParameter();
 			param.setChannel(PAY_CHANNEL.UN);
+			
+			bcQueryResult = BCPay.startQueryRefundCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
 			
 			bcQueryResult = BCPay.startQueryRefund(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
@@ -80,11 +103,18 @@
 			BCRefundQueryParameter param = new BCRefundQueryParameter();
 			param.setChannel(PAY_CHANNEL.YEE);
 			
+			bcQueryResult = BCPay.startQueryRefundCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryRefund(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("refundList", bcQueryResult.getBcRefundList());
 				pageContext.setAttribute("refundSize", bcQueryResult.getBcRefundList().size());
-				pageContext.setAttribute("refundUpdate", true);
 			} else {
 				out.println(bcQueryResult.getErrMsg());
 				out.println(bcQueryResult.getErrDetail());
@@ -95,13 +125,20 @@
 			param.setChannel(PAY_CHANNEL.YEE_WAP);
 			//param.setNeedDetail(true);
 			
+			bcQueryResult = BCPay.startQueryRefundCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			BeeCloud.registerApp("230b89e6-d7ff-46bb-b0b6-032f8de7c5d0", "191418f6-c0f5-4943-8171-d07bfeff46b0");
 			bcQueryResult = BCPay.startQueryRefund(param);
 			BeeCloud.registerApp("c37d661d-7e61-49ea-96a5-68c34e83db3b", "c37d661d-7e61-49ea-96a5-68c34e83db3b");
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("refundList", bcQueryResult.getBcRefundList());
 				pageContext.setAttribute("refundSize", bcQueryResult.getBcRefundList().size());
-				pageContext.setAttribute("refundUpdate", true);
 			} else {
 				out.println(bcQueryResult.getErrMsg());
 				out.println(bcQueryResult.getErrDetail());
@@ -113,7 +150,15 @@
 			
 			BCRefundQueryParameter param = new BCRefundQueryParameter();
 			param.setChannel(PAY_CHANNEL.JD);
-			//param.setStartTime(c.getTime());
+			
+			bcQueryResult = BCPay.startQueryRefundCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryRefund(param);
 			
 			if (bcQueryResult.getType().ordinal() == 0) {
@@ -126,11 +171,19 @@
 		} else if (querytype.equals("kqQuery")) {
 			BCRefundQueryParameter param = new BCRefundQueryParameter();
 			param.setChannel(PAY_CHANNEL.KUAIQIAN);
+			
+			bcQueryResult = BCPay.startQueryRefundCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryRefund(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("refundList", bcQueryResult.getBcRefundList());
 				pageContext.setAttribute("refundSize", bcQueryResult.getBcRefundList().size());
-				pageContext.setAttribute("refundUpdate", true);
 			} else {
 				out.println(bcQueryResult.getErrMsg());
 				out.println(bcQueryResult.getErrDetail());
@@ -138,11 +191,19 @@
 		} else if (querytype.equals("bdQuery")) {
 			BCRefundQueryParameter param = new BCRefundQueryParameter();
 			param.setChannel(PAY_CHANNEL.BD);
+			
+			bcQueryResult = BCPay.startQueryRefundCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryRefund(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("refundList", bcQueryResult.getBcRefundList());
 				pageContext.setAttribute("refundSize", bcQueryResult.getBcRefundList().size());
-				pageContext.setAttribute("refundUpdate", true);
 			} else {
 				out.println(bcQueryResult.getErrMsg());
 				out.println(bcQueryResult.getErrDetail());
@@ -151,6 +212,15 @@
 			
 			BCRefundQueryParameter param = new BCRefundQueryParameter();
 			param.setLimit(50);
+			
+			bcQueryResult = BCPay.startQueryRefundCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryRefund(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("refundList", bcQueryResult.getBcRefundList());
@@ -166,7 +236,14 @@
 			BCQueryParameter param = new BCQueryParameter();
 			param.setChannel(PAY_CHANNEL.ALI);
 			param.setNeedDetail(true);
-			param.setLimit(50);
+			
+			bcQueryResult = BCPay.startQueryBillCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
 			
 			bcQueryResult = BCPay.startQueryBill(param);
 			System.out.println(bcQueryResult.getTotalCount());
@@ -181,6 +258,15 @@
 		} else if (querytype.equals("wechatQuery")) {
 			BCQueryParameter param = new BCQueryParameter();
 			param.setChannel(PAY_CHANNEL.WX);
+			
+			bcQueryResult = BCPay.startQueryBillCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryBill(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("bills", bcQueryResult.getBcOrders());
@@ -192,6 +278,15 @@
 		} else if (querytype.equals("unionQuery")) {
 			BCQueryParameter param = new BCQueryParameter();
 			param.setChannel(PAY_CHANNEL.UN);
+			
+			bcQueryResult = BCPay.startQueryBillCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryBill(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("bills", bcQueryResult.getBcOrders());
@@ -203,6 +298,15 @@
 		} else if (querytype.equals("yeeQuery")) {
 			BCQueryParameter param = new BCQueryParameter();
 			param.setChannel(PAY_CHANNEL.YEE);
+			
+			bcQueryResult = BCPay.startQueryBillCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryBill(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("bills", bcQueryResult.getBcOrders());
@@ -215,6 +319,14 @@
 			BCQueryParameter param = new BCQueryParameter();
 			param.setChannel(PAY_CHANNEL.YEE_WAP);
 			param.setNeedDetail(true);
+			
+			bcQueryResult = BCPay.startQueryBillCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
 			
 			BeeCloud.registerApp("230b89e6-d7ff-46bb-b0b6-032f8de7c5d0", "191418f6-c0f5-4943-8171-d07bfeff46b0");
 			bcQueryResult = BCPay.startQueryBill(param);
@@ -230,6 +342,14 @@
 			BCQueryParameter param = new BCQueryParameter();
 			param.setChannel(PAY_CHANNEL.JD);
 			
+			bcQueryResult = BCPay.startQueryBillCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryBill(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("bills", bcQueryResult.getBcOrders());
@@ -241,6 +361,14 @@
 		} else if (querytype.equals("kqQuery")) {
 			BCQueryParameter param = new BCQueryParameter();
 			param.setChannel(PAY_CHANNEL.KUAIQIAN);
+			
+			bcQueryResult = BCPay.startQueryBillCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
 			
 			bcQueryResult = BCPay.startQueryBill(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
@@ -254,6 +382,14 @@
 			BCQueryParameter param = new BCQueryParameter();
 			param.setChannel(PAY_CHANNEL.BD);
 			
+			bcQueryResult = BCPay.startQueryBillCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
 			bcQueryResult = BCPay.startQueryBill(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
 				pageContext.setAttribute("bills", bcQueryResult.getBcOrders());
@@ -265,6 +401,14 @@
 		}else if (querytype.equals("noChannelQuery")) {
 			BCQueryParameter param = new BCQueryParameter();
 			param.setLimit(50);
+			
+			bcQueryResult = BCPay.startQueryBillCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
 			
 			bcQueryResult = BCPay.startQueryBill(param);
 			if (bcQueryResult.getType().ordinal() == 0) {
@@ -295,6 +439,7 @@
 				</c:if>
 			</tr>
 		</c:forEach> 
+		<tr><td colspan="20"><strong>符合条件记录总条数:</strong><font color="green">${count}</font></td></tr>
 	</table>
 </c:if>
 <c:if test="${refundSize != null and refundSize !=0}">
@@ -308,5 +453,6 @@
 			</c:if>
 			</tr>
 		</c:forEach> 
+		<tr><td colspan="20"><strong>符合条件记录总条数:</strong><font color="green">${count}</font></td></tr>
 	</table>
 </c:if>
