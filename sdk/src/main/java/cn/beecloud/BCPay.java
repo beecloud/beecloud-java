@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response;
 
 import cn.beecloud.BCEumeration.PAY_CHANNEL;
 import cn.beecloud.BCEumeration.RESULT_TYPE;
+import cn.beecloud.bean.BCMSWapPayParameter;
 import cn.beecloud.bean.BCOrderBean;
 import cn.beecloud.bean.BCPayParameter;
 import cn.beecloud.bean.BCQueryParameter;
@@ -686,6 +687,105 @@ public class BCPay {
     }
     
     /**
+	 * @param para {@link BCPayParameter}支付参数
+	 * (必填)
+	 * @return 调起明生电商后的返回结果
+	 */
+    public static BCPayResult startBCMingShengPay(BCPayParameter para) {
+    	
+    	BCPayResult result;
+    	
+        Map<String, Object> param = new HashMap<String, Object>();
+        
+        buildPayParam(param, para);
+        result = new BCPayResult();
+        
+        PAY_CHANNEL channel = para.getChannel();
+        Client client = BCAPIClient.client;
+        WebTarget target = client.target(BCUtilPrivate.getkApiMingShengPay());
+        try {
+            Response response = target.request().post(Entity.entity(param, MediaType.APPLICATION_JSON));
+            if (response.getStatus() == 200) {
+                Map<String, Object> ret = response.readEntity(Map.class);
+
+                boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+                                .toStr(ret.get("result_code")).equals("0"));
+                if (isSuccess) {
+                	result.setObjectId(ret.get("id").toString());
+                	result.setHtml(ret.get("html").toString());
+                } else {
+                	result.setErrMsg(ret.get("result_msg").toString());
+                	result.setErrDetail(ret.get("err_detail").toString());
+                	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+                }
+            } else {
+            	result.setErrMsg("Not correct response!");
+            	result.setErrDetail("Not correct response!");
+            	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+            }
+        } catch (Exception e) {
+        	result.setErrMsg("Network error!");
+        	result.setErrDetail(e.getMessage());
+        	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+        }
+        return result;
+    }
+    
+    /**
+	 * @param para {@link BCMSWapPayParameter}支付参数
+	 * (必填)
+	 * @return 调起明生电商获取令牌的返回结果
+	 */
+    public static BCMSWapPayResult startBCMingShengPay(BCMSWapPayParameter para) {
+    	
+    	BCMSWapPayResult result;
+    	
+        Map<String, Object> param = new HashMap<String, Object>();
+        
+        buildPayParam(param, para);
+        result = new BCMSWapPayResult();
+        
+        PAY_CHANNEL channel = para.getChannel();
+        Client client = BCAPIClient.client;
+        WebTarget target = client.target(BCUtilPrivate.getkApiMingShengPay());
+        try {
+            Response response = target.request().post(Entity.entity(param, MediaType.APPLICATION_JSON));
+            if (response.getStatus() == 200) {
+                Map<String, Object> ret = response.readEntity(Map.class);
+
+                boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+                                .toStr(ret.get("result_code")).equals("0"));
+                if (isSuccess) {
+                	if (ret.get("respCode").toString().equals("C000000000")) {
+                		if (ret.containsKey("phoneToken")) {
+                    		result.setPhoneToken(ret.get("phoneToken").toString());
+                    	} else if (ret.get("tranRespCode").toString().equals("C0") ||
+                    			ret.get("tranRespCode").toString().equals("00")) {
+                    		result.setSucessMsg("交易成功！");
+                    	}
+                	} else {
+                		result.setResponseMsg(ret.get("respMsg").toString());
+                	}
+                	
+                } else {
+                	result.setErrMsg(ret.get("result_msg").toString());
+                	result.setErrDetail(ret.get("err_detail").toString());
+                	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+                }
+            } else {
+            	result.setErrMsg("Not correct response!");
+            	result.setErrDetail("Not correct response!");
+            	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+            }
+        } catch (Exception e) {
+        	result.setErrMsg("Network error!");
+        	result.setErrDetail(e.getMessage());
+        	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+        }
+        return result;
+    }
+    
+    /**
      * @param sign
      *            Webhook提供的签名
      * @param timestamp
@@ -744,6 +844,16 @@ public class BCPay {
         	param.put("cardno", para.getCardNo());
         	param.put("cardpwd", para.getCardPwd());
         	param.put("frqid", para.getFrqid());
+        } 
+        if (para.getChannel().equals(PAY_CHANNEL.MS_WAP)) {
+        	BCMSWapPayParameter mgPara = (BCMSWapPayParameter)para;
+        	param.put("custId", mgPara.getCustId());
+        	param.put("cardNo", mgPara.getCardNo());
+        	param.put("custName", mgPara.getCustName());
+        	param.put("custIdNo", mgPara.getCustIdNo());
+        	param.put("custIdType", mgPara.getCustIdType());
+        	param.put("bankNo", mgPara.getBankNo());
+        	param.put("phoneNo", mgPara.getPhoneNo());
         }
 	}
     

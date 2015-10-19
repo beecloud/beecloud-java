@@ -86,6 +86,14 @@ class BCUtilPrivate {
 		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/refunds/count?para=";
 	}
 	
+	static String getkApiMingShengPay() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/bill";
+	}
+	
+	static String getkApiMingShengVerCode() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/bill";
+	}
+	
 	static String transferDateFromLongToString(long millisecond) {
 		Date date = new Date(millisecond);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
