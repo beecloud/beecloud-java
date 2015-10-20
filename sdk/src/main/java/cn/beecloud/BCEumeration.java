@@ -37,6 +37,7 @@ public class BCEumeration {
 		PAYPAL,
 		PAYPAL_SANDBOX,
 		PAYPAL_LIVE,
+		MS,
 		MS_WEB,
 		MS_WAP
 	}

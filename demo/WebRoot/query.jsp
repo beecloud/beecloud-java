@@ -208,7 +208,27 @@
 				out.println(bcQueryResult.getErrMsg());
 				out.println(bcQueryResult.getErrDetail());
 			} 
-		} else if (querytype.equals("noChannelQuery")) {
+		} else if (querytype.equals("msQuery")) {
+			BCRefundQueryParameter param = new BCRefundQueryParameter();
+			param.setChannel(PAY_CHANNEL.MS);
+			
+			bcQueryResult = BCPay.startQueryRefundCount(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("count", bcQueryResult.getTotalCount());
+			}else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}
+			
+			bcQueryResult = BCPay.startQueryRefund(param);
+			if (bcQueryResult.getType().ordinal() == 0) {
+				pageContext.setAttribute("refundList", bcQueryResult.getBcRefundList());
+				pageContext.setAttribute("refundSize", bcQueryResult.getBcRefundList().size());
+			} else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			} 
+		}else if (querytype.equals("noChannelQuery")) {
 			
 			BCRefundQueryParameter param = new BCRefundQueryParameter();
 			param.setLimit(50);

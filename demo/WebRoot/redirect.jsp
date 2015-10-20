@@ -52,6 +52,7 @@
 		String aliReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/aliReturnUrl.jsp";
 		String unReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/unReturnUrl.jsp";
 		String bdReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/bdReturnUrl.jsp";
+		String msReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/msReturnUrl.jsp";
 		
 		//微信 公众号id（读取配置文件conf.properties）及微信 redirec_uri
 		Properties prop = loadProperty();
@@ -353,6 +354,70 @@
 				out.println(bcPayResult.getObjectId());
 				Thread.sleep(5000);
 				response.sendRedirect(bcPayResult.getUrl());
+			}
+			else {
+				//handle the error message as you wish！
+				out.println(bcPayResult.getErrMsg());
+				out.println(bcPayResult.getErrDetail());
+			}
+		} else if (type.equals("msWeb")) {
+			String msBillNo = billNo.substring(3);
+			System.out.println("msBillNo:" + msBillNo);
+			BCPayParameter param = new BCPayParameter(PAY_CHANNEL.MS_WEB, 100, msBillNo, title);
+			param.setReturnUrl("http://www.163.com");
+			
+			bcPayResult = BCPay.startBCMingShengPay(param);
+			if (bcPayResult.getType().ordinal() == 0) {
+				System.out.println(bcPayResult.getObjectId());
+				out.println(bcPayResult.getObjectId());
+				Thread.sleep(5000);
+				out.println(bcPayResult.getHtml());
+			}
+			else {
+				//handle the error message as you wish！
+				out.println(bcPayResult.getErrMsg());
+				out.println(bcPayResult.getErrDetail());
+			}
+		} else if (type.equals("msWap")) {
+			String msBillNo = billNo.substring(3);
+			System.out.println("msBillNo:" + msBillNo);
+			BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title);
+			param.setCustId("001986");
+			param.setCustName("冯睿");
+			param.setCustIdType("0");
+			param.setCustIdNo("320503198306271012");
+			param.setBankNo("03010000");
+			param.setCardNo("6222600140019886466");
+			param.setPhoneNo("13861331391");
+			
+			bcPayResult = BCPay.startBCMingShengPay(param);
+			if (bcPayResult.getType().ordinal() == 0) {
+				
+				BCMSWapPayResult msResult = (BCMSWapPayResult)bcPayResult;
+				String phoneToken = msResult.getPhoneToken();
+				System.out.println("phoneToken" + phoneToken);
+				if (phoneToken != null) {
+					out.println(phoneToken);
+					Thread.sleep(5000);
+					param.setPhoneToken(phoneToken);
+					param.setPhoneVerCode(phoneToken);
+					
+					msResult = BCPay.startBCMingShengPay(param);
+					if (msResult.getType().ordinal() == 0) {
+						if (msResult.getSucessMsg() != null) {
+							out.println(msResult.getSucessMsg());
+						} else {
+							out.println(msResult.getResponseMsg());
+						}
+					} else {
+						//handle the error message as you wish！
+						out.println(msResult.getErrMsg());
+						out.println(msResult.getErrDetail());
+					}
+				} else {
+					out.println(msResult.getResponseMsg());
+				}
+				
 			}
 			else {
 				//handle the error message as you wish！

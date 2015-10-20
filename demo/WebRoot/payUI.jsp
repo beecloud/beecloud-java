@@ -200,6 +200,14 @@ input {
 					<input type="radio"  value="bdWap" name="paytype">
 					<img src="http://beeclouddoc.qiniudn.com/bdwap.png" alt="KUAIQIAN WEB">
 				</li>
+				<li onclick="paySwitch(this)">
+					<input type="radio"  value="msWeb" name="paytype">
+					<img src="" alt="MINGSHENG_WEB"/>
+				</li>
+				<li onclick="paySwitch(this)">
+					<input type="radio"  value="msWap" name="paytype">
+					<img src="" alt="MINGSHENG_WAP"/>
+				</li>
   		    </ul>
 		</div>
 		<div style="clear: both;">
@@ -247,6 +255,10 @@ input {
 				<li onclick="querySwitch(this)">
 					<input type="radio"  value="bdQuery" name="querytype">
 					<img src="http://beeclouddoc.qiniudn.com/bd.png" alt="BAIDU">
+				</li>
+				<li onclick="querySwitch(this)">
+					<input type="radio"  value="msQuery" name="querytype">
+					<img src="" alt="MINGSHENG">
 				</li>
 				<li onclick="querySwitch(this)">
 					<input type="radio"  value="noChannelQuery" name="querytype">

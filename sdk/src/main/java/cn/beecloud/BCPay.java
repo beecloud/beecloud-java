@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response;
 
 import cn.beecloud.BCEumeration.PAY_CHANNEL;
 import cn.beecloud.BCEumeration.RESULT_TYPE;
+import cn.beecloud.bean.BCMSRefundParameter;
 import cn.beecloud.bean.BCMSWapPayParameter;
 import cn.beecloud.bean.BCOrderBean;
 import cn.beecloud.bean.BCPayParameter;
@@ -713,6 +714,7 @@ public class BCPay {
                 if (isSuccess) {
                 	result.setObjectId(ret.get("id").toString());
                 	result.setHtml(ret.get("html").toString());
+                	result.setType(RESULT_TYPE.OK);
                 } else {
                 	result.setErrMsg(ret.get("result_msg").toString());
                 	result.setErrDetail(ret.get("err_detail").toString());
@@ -766,7 +768,7 @@ public class BCPay {
                 	} else {
                 		result.setResponseMsg(ret.get("respMsg").toString());
                 	}
-                	
+                	result.setType(RESULT_TYPE.OK);
                 } else {
                 	result.setErrMsg(ret.get("result_msg").toString());
                 	result.setErrDetail(ret.get("err_detail").toString());
@@ -784,6 +786,55 @@ public class BCPay {
         }
         return result;
     }
+    
+    /**
+	 * @param para {@link BCMSRefundParameter}退款参数
+	 * @return 发起退款的返回结果
+	 */
+    public static BCPayResult startMingShengRefund(BCMSRefundParameter para) {
+    	 
+    	BCPayResult result;
+    	
+    	Map<String, Object> param = new HashMap<String, Object>();
+    	
+    	buildRefundParam(para, param);
+         
+     	result = new BCPayResult();
+     
+     	Client client = BCAPIClient.client;
+
+     	WebTarget target = client.target(BCUtilPrivate.getkApiRefund());
+     	try {
+             Response response = target.request().post(Entity.entity(param, MediaType.APPLICATION_JSON));
+             if (response.getStatus() == 200) {
+                 Map<String, Object> ret = response.readEntity(Map.class);
+
+                 boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+                                 .toStr(ret.get("result_code")).equals("0"));
+
+                 if (isSuccess) {
+                	 result.setObjectId(ret.get("id").toString());
+             		if (ret.containsKey("url")) {
+            			result.setUrl(ret.get("url").toString());
+            		} 
+             		result.setType(RESULT_TYPE.OK);
+        			result.setSucessMsg(ValidationUtil.REFUND_SUCCESS);
+                 } else {
+                	result.setErrMsg(ret.get("result_msg").toString());
+                 	result.setErrDetail(ret.get("err_detail").toString());
+                 	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+                 }
+             } else {
+             	result.setErrMsg("Not correct response!");
+             	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+             }
+         } catch (Exception e) {
+         	result.setErrMsg("Network error!");
+         	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+         }
+         return result;
+    }
+    
     
     /**
      * @param sign
@@ -880,6 +931,12 @@ public class BCPay {
     	}
     	if (para.getOptional() != null && para.getOptional().size() > 0)
     		param.put("optional", para.getOptional());
+    	
+    	if (para.getChannel() != null && para.getChannel().equals(PAY_CHANNEL.MS)) {
+    		BCMSRefundParameter msPara = (BCMSRefundParameter)para;
+    		param.put("cause", msPara.getCause().toString());
+    		param.put("appuser", msPara.getAppuser().toString());
+    	}
 	}
     
     /**
