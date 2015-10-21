@@ -94,8 +94,24 @@ class BCUtilPrivate {
 		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/bill";
 	}
 	
-	static String getkApiQueryMingShengBillById() {
-		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/querybyidkj";
+	static String getkApiQueryMingShengWapBillById() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/kjquerybyid";
+	}
+	
+	static String getkApiQueryMingShengWebBillById() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/webquerybyid"; 
+	}
+	
+	static String getkApiQueryMingShengWebBill() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/querys"; 
+	}
+	
+	static String getkApiQueryMingShengWebRefund() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/refunds"; 
+	}
+	
+	static String getkApiMingShengRefund() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/refund";
 	}
 	
 	static String transferDateFromLongToString(long millisecond) {

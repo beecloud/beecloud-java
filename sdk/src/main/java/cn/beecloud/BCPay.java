@@ -10,7 +10,9 @@
 package cn.beecloud;
 
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +25,13 @@ import javax.ws.rs.core.Response;
 
 import cn.beecloud.BCEumeration.PAY_CHANNEL;
 import cn.beecloud.BCEumeration.RESULT_TYPE;
-import cn.beecloud.bean.BCMSRefundParameter;
+import cn.beecloud.bean.BCMSRefundResult;
 import cn.beecloud.bean.BCMSWapPayParameter;
+import cn.beecloud.bean.BCMSWapQueryResult;
+import cn.beecloud.bean.BCMSWebOrderBean;
+import cn.beecloud.bean.BCMSWebPayParameter;
+import cn.beecloud.bean.BCMSWebQueryResult;
+import cn.beecloud.bean.BCMSWebRefundBean;
 import cn.beecloud.bean.BCOrderBean;
 import cn.beecloud.bean.BCPayParameter;
 import cn.beecloud.bean.BCQueryParameter;
@@ -758,15 +765,11 @@ public class BCPay {
                 boolean isSuccess = (ret.containsKey("result_code") && StrUtil
                                 .toStr(ret.get("result_code")).equals("0"));
                 if (isSuccess) {
-                	if (ret.get("respCode").toString().equals("C000000000")) {
-                		if (ret.containsKey("phoneToken")) {
-                    		result.setPhoneToken(ret.get("phoneToken").toString());
-                    	} else if (ret.get("tranRespCode").toString().equals("C0") ||
-                    			ret.get("tranRespCode").toString().equals("00")) {
-                    		result.setSucessMsg("交易成功！");
-                    	}
+            		if (ret.containsKey("phoneToken")) {
+                		result.setPhoneToken(ret.get("phoneToken").toString());
                 	} else {
-                		result.setResponseMsg(ret.get("respMsg").toString());
+                		result.setChannelTradeNo(ret.get("refNo").toString());
+                		result.setSucessMsg("交易成功！");
                 	}
                 	result.setType(RESULT_TYPE.OK);
                 } else {
@@ -788,22 +791,27 @@ public class BCPay {
     }
     
     /**
-	 * @param para {@link BCMSRefundParameter}退款参数
+	 * @param para billNo
 	 * @return 发起退款的返回结果
 	 */
-    public static BCPayResult startMingShengRefund(BCMSRefundParameter para) {
+    public static BCMSRefundResult startMingShengRefund(String billNo, Integer refundFee, String refundNo) {
     	 
-    	BCPayResult result;
+    	BCMSRefundResult result;
     	
     	Map<String, Object> param = new HashMap<String, Object>();
     	
-    	buildRefundParam(para, param);
-         
-     	result = new BCPayResult();
+    	param.put("app_id", BCCache.getAppID());
+    	param.put("timestamp", System.currentTimeMillis());
+    	param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
+    	param.put("bill_no", billNo);
+    	param.put("refund_fee", refundFee);
+    	param.put("refund_no", refundNo);
+    	
+     	result = new BCMSRefundResult();
      
      	Client client = BCAPIClient.client;
 
-     	WebTarget target = client.target(BCUtilPrivate.getkApiRefund());
+     	WebTarget target = client.target(BCUtilPrivate.getkApiMingShengRefund());
      	try {
              Response response = target.request().post(Entity.entity(param, MediaType.APPLICATION_JSON));
              if (response.getStatus() == 200) {
@@ -813,10 +821,8 @@ public class BCPay {
                                  .toStr(ret.get("result_code")).equals("0"));
 
                  if (isSuccess) {
-                	 result.setObjectId(ret.get("id").toString());
-             		if (ret.containsKey("url")) {
-            			result.setUrl(ret.get("url").toString());
-            		} 
+                	result.setObjectId(ret.get("id").toString());
+             		result.setRefundId(ret.get("refundId").toString());
              		result.setType(RESULT_TYPE.OK);
         			result.setSucessMsg(ValidationUtil.REFUND_SUCCESS);
                  } else {
@@ -833,6 +839,324 @@ public class BCPay {
          	result.setType(RESULT_TYPE.RUNTIME_ERROR);
          }
          return result;
+    }
+    
+    /**
+     * Bill Query by Id.
+     * @param channelTradeNo the id to query by.
+     * @return BCMSWapQueryResult
+     */
+    public static BCMSWapQueryResult startQueryMSWapBillById(String channelTradeNo) {
+    	
+    	 BCMSWapQueryResult result;
+    	
+		 Map<String, Object> param = new HashMap<String, Object>();
+	     param.put("app_id", BCCache.getAppID());
+	     param.put("timestamp", System.currentTimeMillis());
+	     param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
+         param.put("channel_trade_no", channelTradeNo);
+         
+         result = new BCMSWapQueryResult();
+    	
+    	 Client client = BCAPIClient.client;
+    	  
+    	 StringBuilder sb = new StringBuilder();   
+         sb.append(BCUtilPrivate.getkApiQueryMingShengWapBillById());
+        
+         try {
+        	sb.append("?para=");
+            sb.append(URLEncoder.encode(
+                            JSONObject.fromObject(param).toString(), "UTF-8"));
+
+            WebTarget target = client.target(sb.toString());
+            Response response = target.request().get();
+            if (response.getStatus() == 200) {
+                Map<String, Object> ret = response.readEntity(Map.class);
+
+                boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+                                .toStr(ret.get("result_code")).equals("0"));
+
+                if (isSuccess) {
+                	result.setType(RESULT_TYPE.OK);
+                    result.setAmount(ret.get("amount").toString());
+                    result.setTxnStat(ret.get("txnStat").toString());
+                    result.setTxnType(ret.get("txnType").toString());
+                    result.setMerOrderId(ret.get("merTransTime").toString());
+                    result.setMerOrderId(ret.get("merOrderId").toString());
+                } else {
+                	result.setErrMsg(ret.get("result_msg").toString());
+                	result.setErrDetail(ret.get("err_detail").toString());
+                	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+                }
+            } else {
+            	result.setErrMsg("Not correct response!");
+            	result.setErrDetail("Not correct response!");
+            	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+            }
+        } catch (Exception e) {
+        	result.setErrMsg("Network error!");
+        	result.setErrDetail(e.getMessage());
+        	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+        }
+    	
+    	return result;
+    }
+    
+    /**
+     * Bill Query by Id.
+     * @param billNo the id to query by.
+     * @return BCMSWebQueryResult
+     */
+    public static BCMSWebQueryResult startQueryMSWebBillById(String billNo) {
+    	
+    	BCMSWebQueryResult result;
+    	
+		 Map<String, Object> param = new HashMap<String, Object>();
+	     param.put("app_id", BCCache.getAppID());
+	     param.put("timestamp", System.currentTimeMillis());
+	     param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
+         param.put("bill_no", billNo);
+         
+         result = new BCMSWebQueryResult();
+    	
+    	 Client client = BCAPIClient.client;
+    	  
+    	 StringBuilder sb = new StringBuilder();   
+         sb.append(BCUtilPrivate.getkApiQueryMingShengWebBillById());
+        
+         try {
+        	sb.append("?para=");
+            sb.append(URLEncoder.encode(
+                            JSONObject.fromObject(param).toString(), "UTF-8"));
+
+            WebTarget target = client.target(sb.toString());
+            Response response = target.request().get();
+            if (response.getStatus() == 200) {
+                Map<String, Object> ret = response.readEntity(Map.class);
+
+                boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+                                .toStr(ret.get("result_code")).equals("0"));
+
+                if (isSuccess) {
+                	result.setType(RESULT_TYPE.OK);
+                    result.getMsBean().setAmountSum(ret.get("amountSum").toString());
+                    result.getMsBean().setPayOrderId(ret.get("payOrderId").toString());
+                    result.getMsBean().setMerOrderId(ret.get("merOrderId").toString());
+                    result.getMsBean().setMerSendTime(ret.get("merSendTime").toString());
+                    result.getMsBean().setPayBank(ret.get("payBank").toString());
+                    result.getMsBean().setType(ret.get("type").toString());
+                    result.getMsBean().setState(ret.get("state").toString());
+                } else {
+                	result.setErrMsg(ret.get("result_msg").toString());
+                	result.setErrDetail(ret.get("err_detail").toString());
+                	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+                }
+            } else {
+            	result.setErrMsg("Not correct response!");
+            	result.setErrDetail("Not correct response!");
+            	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+            }
+        } catch (Exception e) {
+        	result.setErrMsg("Network error!");
+        	result.setErrDetail(e.getMessage());
+        	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+        }
+    	
+    	return result;
+    }
+    
+    /**
+     * Bill Batch Query.
+     * @param payBank
+     * @param startDate
+     * @param endDate
+     * @return BCMSWebQueryResult
+     */
+    public static BCMSWebQueryResult startQueryMSWebBill(String payBank, Date startDate, Date endDate) {
+    	
+    	BCMSWebQueryResult result;
+    	
+		 Map<String, Object> param = new HashMap<String, Object>();
+	     param.put("app_id", BCCache.getAppID());
+	     param.put("timestamp", System.currentTimeMillis());
+	     param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
+         if (payBank != null) {
+        	 param.put("payBank", payBank);
+         }
+         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+         param.put("startTime", sdf.format(startDate));
+         param.put("endTime", sdf.format(endDate));
+         
+         result = new BCMSWebQueryResult();
+    	
+    	 Client client = BCAPIClient.client;
+    	  
+    	 StringBuilder sb = new StringBuilder();   
+         sb.append(BCUtilPrivate.getkApiQueryMingShengWebBill());
+        
+         try {
+        	sb.append("?para=");
+            sb.append(URLEncoder.encode(
+                            JSONObject.fromObject(param).toString(), "UTF-8"));
+
+            WebTarget target = client.target(sb.toString());
+            Response response = target.request().get();
+            if (response.getStatus() == 200) {
+                Map<String, Object> ret = response.readEntity(Map.class);
+
+                boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+                                .toStr(ret.get("result_code")).equals("0"));
+
+                if (isSuccess) {
+                	result.setType(RESULT_TYPE.OK);
+                	for (Map<String, Object> map :  (List<Map<String, Object>>)ret.get("bills")){
+                		BCMSWebOrderBean bean = new BCMSWebOrderBean();
+                		bean.setAmountSum(map.get("amountSum").toString());
+                		bean.setPayOrderId(map.get("payOrderId").toString());
+                		bean.setMerOrderId(map.get("merOrderId").toString());
+                		bean.setMerSendTime(map.get("merSendTime").toString());
+                		bean.setPayBank(map.get("payBank").toString());
+                		bean.setType(map.get("type").toString());
+                		bean.setState(map.get("state").toString());
+                		result.getMsBeanList().add(bean);
+                	}
+                	result.setCount((Integer)ret.get("count"));
+                    
+                } else {
+                	result.setErrMsg(ret.get("result_msg").toString());
+                	result.setErrDetail(ret.get("err_detail").toString());
+                	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+                }
+            } else {
+            	result.setErrMsg("Not correct response!");
+            	result.setErrDetail("Not correct response!");
+            	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+            }
+        } catch (Exception e) {
+        	result.setErrMsg("Network error!");
+        	result.setErrDetail(e.getMessage());
+        	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+        }
+    	
+    	return result;
+    }
+    
+    public static BCMSWebQueryResult startQueryMSWebRefund(Date startDate, Date endDate) {
+    	
+    	BCMSWebQueryResult result;
+    	
+		 Map<String, Object> param = new HashMap<String, Object>();
+	     param.put("app_id", BCCache.getAppID());
+	     param.put("timestamp", System.currentTimeMillis());
+	     param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
+         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+         param.put("startTime", sdf.format(startDate));
+         param.put("endTime", sdf.format(endDate));
+         
+         result = new BCMSWebQueryResult();
+    	
+    	 Client client = BCAPIClient.client;
+    	  
+    	 StringBuilder sb = new StringBuilder();   
+         sb.append(BCUtilPrivate.getkApiQueryMingShengWebRefund());
+        
+         try {
+        	sb.append("?para=");
+            sb.append(URLEncoder.encode(
+                            JSONObject.fromObject(param).toString(), "UTF-8"));
+
+            WebTarget target = client.target(sb.toString());
+            Response response = target.request().get();
+            if (response.getStatus() == 200) {
+                Map<String, Object> ret = response.readEntity(Map.class);
+
+                boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+                                .toStr(ret.get("result_code")).equals("0"));
+
+                if (isSuccess) {
+                	result.setType(RESULT_TYPE.OK);
+                	for (Map<String, Object> map :  (List<Map<String, Object>>)ret.get("refunds")){
+                		BCMSWebRefundBean bean = new BCMSWebRefundBean();
+                		bean.setAmount(map.get("amount").toString());
+                		bean.setApplyDate(map.get("applyDate").toString());
+                		bean.setStartFlag(map.get("startFlag").toString());
+                		bean.setMerchantId(map.get("merchantId").toString());
+                		bean.setMerOrderId(map.get("merOrderId").toString());
+                		bean.setPayorderId(map.get("payorderId").toString());
+                		bean.setState(map.get("state").toString());
+                		bean.setRefundId(map.get("refundId").toString());
+                		bean.setRefundAmount(map.get("refundAmount").toString());
+                		result.getMsRefundBeanList().add(bean);
+                	}
+                	result.setCount((Integer)ret.get("count"));
+                    
+                } else {
+                	result.setErrMsg(ret.get("result_msg").toString());
+                	result.setErrDetail(ret.get("err_detail").toString());
+                	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+                }
+            } else {
+            	result.setErrMsg("Not correct response!");
+            	result.setErrDetail("Not correct response!");
+            	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+            }
+        } catch (Exception e) {
+        	result.setErrMsg("Network error!");
+        	result.setErrDetail(e.getMessage());
+        	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+        }
+    	
+    	return result;
+    }
+    
+    public static BCQueryStatusResult startMSWebRefundUpdate(String refundId) {
+
+    	BCQueryStatusResult result;
+    	
+		Map<String, Object> param = new HashMap<String, Object>();
+        param.put("app_id", BCCache.getAppID());
+        param.put("timestamp", System.currentTimeMillis());
+        param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
+        param.put("channel_refund_no", refundId);
+        
+        result = new BCQueryStatusResult();
+        StringBuilder sb = new StringBuilder();   
+        sb.append(BCUtilPrivate.getkApiRefundUpdate());
+        
+        
+        Client client = BCAPIClient.client;
+        
+        try {
+        	sb.append(URLEncoder.encode(
+                    JSONObject.fromObject(param).toString(), "UTF-8"));
+        	WebTarget target = client.target(sb.toString());
+		    Response response = target.request().get();
+            if (response.getStatus() == 200) {
+                Map<String, Object> ret = response.readEntity(Map.class);
+
+                boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+                                .toStr(ret.get("result_code")).equals("0"));
+
+                if (isSuccess) {
+                	result.setRefundStatus(ret.get("refund_status").toString());
+                    result.setType(RESULT_TYPE.OK);
+                } else {
+                	result.setErrMsg(ret.get("result_msg").toString());
+                	result.setErrDetail(ret.get("err_detail").toString());
+                	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+                }
+            } else {
+            	result.setErrMsg("Not correct response!");
+            	result.setErrDetail("Not correct response!");
+            	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+            }
+        } catch (Exception e) {
+        	result.setErrMsg("Network error!");
+        	result.setErrDetail(e.getMessage());
+        	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+        }
+        return result;
+    	
     }
     
     
@@ -905,6 +1229,17 @@ public class BCPay {
         	param.put("custIdType", mgPara.getCustIdType());
         	param.put("bankNo", mgPara.getBankNo());
         	param.put("phoneNo", mgPara.getPhoneNo());
+        	param.put("subject", mgPara.getSubject());
+        	if (mgPara.getPhoneToken() != null) {
+        		param.put("phoneToken", mgPara.getPhoneToken());
+        	}
+        	if (mgPara.getPhoneVerCode() != null) {
+        		param.put("phoneVerCode", mgPara.getPhoneVerCode());
+        	}
+        }
+        if (para.getChannel().equals(PAY_CHANNEL.MS_WEB)) {
+        	BCMSWebPayParameter msPara = (BCMSWebPayParameter)para;
+        	param.put("subject", msPara.getSubject());
         }
 	}
     
@@ -931,12 +1266,6 @@ public class BCPay {
     	}
     	if (para.getOptional() != null && para.getOptional().size() > 0)
     		param.put("optional", para.getOptional());
-    	
-    	if (para.getChannel() != null && para.getChannel().equals(PAY_CHANNEL.MS)) {
-    		BCMSRefundParameter msPara = (BCMSRefundParameter)para;
-    		param.put("cause", msPara.getCause().toString());
-    		param.put("appuser", msPara.getAppuser().toString());
-    	}
 	}
     
     /**
@@ -1116,4 +1445,5 @@ public class BCPay {
     	bcRefund.setMessageDetail(refund.get("message_detail").toString());
     	return bcRefund;
     }
+    
 }

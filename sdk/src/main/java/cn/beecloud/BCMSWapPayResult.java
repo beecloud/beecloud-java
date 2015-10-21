@@ -4,7 +4,7 @@ public class BCMSWapPayResult extends BCPayResult{
 	
 	private String phoneToken;
 	
-	private String responseMsg;
+	private String channelTradeNo;
 	
 	public String getPhoneToken() {
 		return phoneToken;
@@ -14,11 +14,11 @@ public class BCMSWapPayResult extends BCPayResult{
 		this.phoneToken = phoneToken;
 	}
 
-	public String getResponseMsg() {
-		return responseMsg;
+	public String getChannelTradeNo() {
+		return channelTradeNo;
 	}
 
-	public void setResponseMsg(String responseMsg) {
-		this.responseMsg = responseMsg;
+	public void setChannelTradeNo(String channelTradeNo) {
+		this.channelTradeNo = channelTradeNo;
 	}
 }

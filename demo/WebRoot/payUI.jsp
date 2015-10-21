@@ -257,8 +257,16 @@ input {
 					<img src="http://beeclouddoc.qiniudn.com/bd.png" alt="BAIDU">
 				</li>
 				<li onclick="querySwitch(this)">
-					<input type="radio"  value="msQuery" name="querytype">
-					<img src="" alt="MINGSHENG">
+					<input type="radio"  value="msWebQuery" name="querytype">
+					<img src="" alt="民生网关批量">
+				</li>
+				<li onclick="querySwitch(this)">
+					<input type="radio"  value="msWebQueryById" name="querytype">
+					<img src="" alt="民生网关单笔">
+				</li>
+				<li onclick="querySwitch(this)">
+					<input type="radio"  value="msWapQueryById" name="querytype">
+					<img src="" alt="民生快捷单笔">
 				</li>
 				<li onclick="querySwitch(this)">
 					<input type="radio"  value="noChannelQuery" name="querytype">

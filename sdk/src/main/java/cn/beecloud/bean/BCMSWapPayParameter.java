@@ -22,6 +22,8 @@ public class BCMSWapPayParameter extends BCPayParameter {
 	
 	private String phoneToken;
 	
+	private String subject;
+	
 	public BCMSWapPayParameter(PAY_CHANNEL channel, Integer totalFee,
 			String billNo, String title) {
 		super(channel, totalFee, billNo, title);
@@ -134,5 +136,20 @@ public class BCMSWapPayParameter extends BCPayParameter {
 	 */
 	public void setPhoneToken(String phoneToken) {
 		this.phoneToken = phoneToken;
+	}
+	
+	/**
+	 * 访问字段  {@link #subject}
+	 */
+	public String getSubject() {
+		return subject;
+	}
+	
+	/**
+	 * @param subject 商品种类，该参数，是从民生电商处获得
+	 * (必填)
+	 */
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 }

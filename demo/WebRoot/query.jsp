@@ -23,6 +23,14 @@
 	function startRefund(bill_no, total_fee, channel) {
 		window.location.href="startRefund.jsp?bill_no=" + bill_no + "&total_fee=" + total_fee + "&channel=" + channel;
 	}
+	
+	function startMSWebRefund(billNo) {
+		window.location.href="startMSWebRefund.jsp?bill_no=" + billNo;
+	}
+	
+	function startMSWebRefundUpdate(refundId) {
+		window.location.href="msWebRefundUpdate.jsp?refundId=" + refundId;
+	}
 </script>
 </head>
 <body>
@@ -250,7 +258,16 @@
 				out.println(bcQueryResult.getErrMsg());
 				out.println(bcQueryResult.getErrDetail());
 			}
-		} 
+		} else if (querytype.equals("msWebQuery")) {
+			BCMSWebQueryResult result = BCPay.startQueryMSWebRefund(new Date(), new Date());
+			if (result.getType().ordinal() == 0) {
+				pageContext.setAttribute("msRefundList", result.getMsRefundBeanList());
+				pageContext.setAttribute("count", result.getCount());
+			} else {
+				out.println(bcQueryResult.getErrMsg());
+				out.println(bcQueryResult.getErrDetail());
+			}	
+		}
 	}else {
 		if (querytype.equals("aliQuery")) {
 			BCQueryParameter param = new BCQueryParameter();
@@ -440,6 +457,32 @@
 				out.println(bcQueryResult.getErrMsg());
 				out.println(bcQueryResult.getErrDetail());
 			}
+		} else if (querytype.equals("msWebQuery")) {
+			BCMSWebQueryResult result = BCPay.startQueryMSWebBill(null, new Date(), new Date());
+			if (result.getType().ordinal() == 0) {
+				pageContext.setAttribute("msWebBills", result.getMsBeanList());
+				pageContext.setAttribute("count", result.getCount());
+			} else {
+				out.println(result.getErrMsg());
+				out.println(result.getErrDetail());
+			}
+			
+		} else if (querytype.equals("msWebQueryById")) {
+			BCMSWebQueryResult result = BCPay.startQueryMSWebBillById("7f8fba9194db0bced65f09d9381f2");
+			if (result.getType().ordinal() == 0) {
+				pageContext.setAttribute("msBean", result.getMsBean());
+			} else {
+				out.println(result.getErrMsg());
+				out.println(result.getErrDetail());
+			}
+		} else if (querytype.equals("msWapQueryById")) {
+			BCMSWapQueryResult result = BCPay.startQueryMSWapBillById("QP201510211657278379");
+			if (result.getType().ordinal() == 0) {
+				pageContext.setAttribute("msWapBean", result);
+			} else {
+				out.println(result.getErrMsg());
+				out.println(result.getErrDetail());
+			}
 		}
 	}
 %>
@@ -471,6 +514,49 @@
 			<input class="button" type="button" onclick="queryStatus('${refund.channel}','${refund.refundNo}')" value="查询"/>
 			</td>
 			</c:if>
+			</tr>
+		</c:forEach> 
+		<tr><td colspan="20"><strong>符合条件记录总条数:</strong><font color="green">${count}</font></td></tr>
+	</table>
+</c:if>
+
+<c:if test="${msWebBills != null and count !=0}">
+	<table border="3" class="table"><tr><th>平台交易号</th><th>商户订单号</th><th>平台接受订单时间</th><th>金额</th><th>支付银行</th><th>状态</th><th>交易类型</th><th>发起退款</th></tr>
+		<c:forEach var="bill" items="${msWebBills}" varStatus="index"> 
+			<tr><td>${bill.payOrderId}</td><td>${bill.merOrderId}</td><td>${bill.merSendTime}</td><td>${bill.amountSum}</td><td>${bill.payBank}</td><td>${bill.state}</td><td>${bill.type}</td>
+				<td align="center" >
+					<input class="button" type="button" onclick="startMSWebRefund('${bill.merOrderId}')" value="退款"/>
+				</td>
+			</tr>
+		</c:forEach> 
+		<tr><td colspan="20"><strong>符合条件记录总条数:</strong><font color="green">${count}</font></td></tr>
+	</table>
+</c:if>
+
+<c:if test="${msBean != null}">
+	<table border="3" class="table"><tr><th>平台交易号</th><th>商户订单号</th><th>平台接受订单时间</th><th>金额</th><th>支付银行</th><th>状态</th><th>交易类型</th><th>发起退款</th></tr>
+			<tr><td>${msBean.payOrderId}</td><td>${msBean.merOrderId}</td><td>${msBean.merSendTime}</td><td>${msBean.amountSum}</td><td>${msBean.payBank}</td><td>${msBean.state}</td><td>${msBean.type}</td>
+				<td align="center" >
+					<input class="button" type="button" onclick="startMSWebRefund('${bill.merOrderId}')" value="退款"/>
+				</td>
+			</tr>
+	</table>
+</c:if>
+
+<c:if test="${msWapBean != null}">
+	<table border="3" class="table"><tr><th>交易类型</th><th>交易状态</th><th>金额</th><th>商户交易时间</th><th>商户订单号</th>
+		<tr><td>${msWapBean.txnType}</td><td>${msWapBean.txnStat}</td><td>${msWapBean.amount}</td><td>${msWapBean.merTransTime}</td><td>${msWapBean.merOrderId}</td>
+		</tr>
+	</table>
+</c:if>
+
+<c:if test="${msRefundList != null and count !=0}">
+	<table border="3" class="table"><tr><th>退款流水号</th><th>商户号</th><th>原平台交易号</th><th>商户订单号</th><th>原订单金额</th><th>退款申请金额</th><th>状态</th><th>申请时间</th><th>申请时间</th><th>发起标记</th></tr>
+		<c:forEach var="refund" items="${msRefundList}" varStatus="index"> 
+			<tr><td>${refund.refundId}</td><td>${refund.merchantId}</td><td>${refund.payorderId}</td><td>${refund.merOrderId}</td><td>${refund.amount}</td><td>${refund.refundAmount}</td><td>${refund.state}</td><td>${refund.applyDate}</td><td>${refund.startFlag}</td>
+				<td align="center" >
+					<input class="button" type="button" onclick="startMSWebRefundUpdate('${refund.refundId}')" value="退款查询"/>
+				</td>
 			</tr>
 		</c:forEach> 
 		<tr><td colspan="20"><strong>符合条件记录总条数:</strong><font color="green">${count}</font></td></tr>
