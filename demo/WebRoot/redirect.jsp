@@ -381,8 +381,9 @@
 			}
 		} else if (type.equals("msWap")) {
 			String msBillNo = billNo.substring(10);
+			String subject = "1172001";
 			System.out.println("msBillNo:" + msBillNo);
-			BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, sube);
+			BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, subject);
 			param.setCustId("001986");
 			param.setCustName("冯睿");
 			param.setCustIdType("0");
