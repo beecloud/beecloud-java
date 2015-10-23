@@ -1,8 +1,11 @@
 package cn.beecloud.bean;
 
-import cn.beecloud.BCQueryResult;
 import cn.beecloud.BCEumeration.RESULT_TYPE;
 
+/**
+ * @author Ray
+ * @since 2015/10/22
+ */
 public class BCMSWapQueryResult {
 	
 	private String errMsg;

@@ -1,5 +1,10 @@
 package cn.beecloud;
 
+
+/**
+ * @author Ray
+ * @since 2015/10/22
+ */
 public class BCMSWapPayResult extends BCPayResult{
 	
 	private String phoneToken;

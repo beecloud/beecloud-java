@@ -21,7 +21,7 @@
 <%
 	String billNo = request.getParameter("bill_no");
 	String refundNo = new SimpleDateFormat("yyyyMMdd").format(new Date()) + BCUtil.generateNumberWith3to24digitals();
-	BCMSRefundResult result = BCPay.startMingShengRefund(billNo, 100, refundNo);
+	BCMSRefundResult result = BCPay.startMSWebRefund(billNo, 100, refundNo);
 	
 	if (result.getType().ordinal() == 0 ) {
 		out.println(result.getObjectId());

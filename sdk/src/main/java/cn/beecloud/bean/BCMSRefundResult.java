@@ -1,6 +1,5 @@
 package cn.beecloud.bean;
 
-import cn.beecloud.BCPayResult;
 import cn.beecloud.BCEumeration.RESULT_TYPE;
 
 public class BCMSRefundResult {

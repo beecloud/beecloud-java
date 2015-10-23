@@ -542,6 +542,140 @@ id | 待查询订单记录的唯一标识符，（必填）
 return | BCQueryResult, 根据type决定返回内容
 
 
+## 民生电商
+
+以下是民生电商的接口，具体可参考Demo
+
+
+### <a name="msWeb">网关支付</a>
+
+网关支付接口接收BCMSWebPayParameter参数对象，该对象封装了发起支付所需的各个具体参数。
+发起支付将返回BCPayResult对象，BCPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCPayResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用getHtml()方法，getHtml()方法返回html,如将html输出至页面，即可开始民生网关支付。
+
+```java
+BCMSWebPayParameter param = new BCMSWebPayParameter(PAY_CHANNEL.MS_WEB, 100, billNo, title, subject);
+param.setReturnUrl("http://www.msyidai.com");
+			
+bcPayResult = BCPay.startBCMSWebPay(param);
+if (bcPayResult.getType().ordinal() == 0) {
+	out.println(bcPayResult.getObjectId());
+	out.println(bcPayResult.getHtml());
+}
+else {
+	//handle the error message as you wish！
+	out.println(bcPayResult.getErrMsg());
+	out.println(bcPayResult.getErrDetail());
+}
+```
+代码中的参数对象BCMSWebPayParameter封装字段含义如下：
+
+key | 说明
+---- | -----
+channel | 渠道类型，此处固定为"MS_WEB"（必填）
+totalFee | 订单总金额， 必须是正整数，单位为分，最低100分 根据type决定返回内容 (必填)
+subject | 商品种类，该参数，是从民生电商处获得 (必填)
+billNo | 商户订单号，8到30位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复 (必填)
+title | 订单标题，UTF8编码格式，32个字节内，最长支持16个汉字 (必填)
+optional | 附加数据，用户自定义的参数，将会在webhook通知中原样返回，该字段主要用于商户携带订单的自定义数据 (选填)
+returnUrl | 同步返回页面，支付渠道处理完请求后,当前页面自动跳转到商户网站里指定页面的http路径,不要以包含localhost，否则渠道会认为非法，当为MS_WEB时，必填 (选填)
+
+### <a name="msWapSign">快捷鉴权</a>
+
+快捷鉴权接口接收BCMSWapPayParameter参数对象，该对象封装了发起快捷鉴权及支付所需的各个具体参数。
+
+发起快捷鉴权需要指定BCMSWapPayParameter对象的flag属性值为"sign"。
+
+此接口返回BCMSWapPayResult对象，BCMSWapPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWapPayResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用getPhoneToken()方法，getPhoneToken()方法返回鉴权令牌,用来作为发起快捷支付的输入参数。
+
+```java
+BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, subject);
+param.setCustId(custId);
+param.setCustName(custName);
+param.setCustIdType("0");
+param.setCustIdNo(custIdNo);
+param.setBankNo(bankNo);
+param.setCardNo(cardNo);
+param.setPhoneNo(phoneNo);
+param.setFlag("sign");//此处固定为"sign"
+
+BCMSWapPayResult bcMSWapPayResult = BCPay.startBCMSWapPay(param);
+if (bcMSWapPayResult.getType().ordinal() == 0) {
+    String phoneToken = bcMSWapPayResult.getPhoneToken();
+    //记录下phoneToken
+}
+else {
+	//handle the error message as you wish！
+	out.println(bcMSWapPayResult.getErrMsg());
+	out.println(bcMSWapPayResult.getErrDetail());
+}
+```
+
+### <a name="msWapPay">快捷支付</a>
+
+快捷支付和快捷鉴权调用同一接口，接收BCMSWapPayParameter参数对象，该对象封装了发起快捷鉴权及支付所需的各个具体参数。
+
+发起快捷支付需要指定BCMSWapPayParameter对象的flag属性值为"pay"。
+
+此接口返回BCMSWapPayResult对象，BCMSWapPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWapPayResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用getChannelTradeNo()方法，getChannelTradeNo()方法返回渠道订单号,用来作为发起快捷单笔订单查询的输入参数。
+
+```java
+BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, subject);
+param.setCustId(custId);
+param.setCustName(custName);
+param.setCustIdType("0");
+param.setCustIdNo(custIdNo);
+param.setBankNo(bankNo);
+param.setCardNo(cardNo);
+param.setPhoneNo(phoneNo);
+param.setFlag("pay");//此处固定为"pay"
+
+param.setPhoneToken(phoneToken);//鉴权返回的令牌
+param.setPhoneVerCode(phoneVerCode);//短信验证码
+
+BCMSWapPayResult bcMSWapPayResult = BCPay.startBCMSWapPay(param);
+if (bcMSWapPayResult.getType().ordinal() == 0) {
+    String phoneToken = bcMSWapPayResult.getChannelTradeNo();;
+    //记录下channelTradeNo
+}
+else {
+	//handle the error message as you wish！
+	out.println(bcMSWapPayResult.getErrMsg());
+	out.println(bcMSWapPayResult.getErrDetail());
+}
+```
+发起快捷鉴权、支付代码中的参数对象BCMSWapPayParameter封装字段含义如下：
+
+key | 说明
+---- | -----
+channel | 渠道类型，此处固定为"MS_WAP"（必填）
+totalFee | 订单总金额， 必须是正整数，单位为分，最低100分 根据type决定返回内容 (必填)
+subject | 商品种类，该参数，是从民生电商处获得 (必填)
+billNo | 商户订单号，8到30位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复 (必填)
+title | 订单标题，UTF8编码格式，32个字节内，最长支持16个汉字 (必填)
+optional | 附加数据，用户自定义的参数，将会在webhook通知中原样返回，该字段主要用于商户携带订单的自定义数据 (选填)
+custId | 客户号,28位以内的数字或字母的组合 (必填)
+cardNo | 卡号,借记卡和信用卡的卡号 (必填)
+custName | 客户姓名,UTF8编码格式，32个字节内，最长支持16个汉字 (必填)
+custIdNo | 证件号,身份证号，军官证等 (必填)
+custIdType | 客户证件类型：<br>0	身份证类型<br>1	护照类型<br>2	军官证<br>3	士兵证<br>4	港澳台通行证<br>5	临时身份证<br>6	户口本<br>7	其他类型证件<br>9	警官证<br>12	外国人居留证<br>15	回乡证<br>16	企业营业执照<br>17	法人代码证<br>18	台胞证0代表身份证 (必填)
+bankNo | 银行编号,需要快捷支付的银行号:03080000	招商银行<br> 01020000	中国工商银行<br>01030000	中国农业银行<br>01050000	中国建设银行<br>01040000	中国银行<br>03100000	浦发银行<br>03010000	中国交通银行 <br>03050000	中国民生银行<br>SDB（暂不支持）	深圳发展银行<br>03060000	广东发展银行<br>03020000	中信银行<br>03040000	华夏银行<br>03090000	兴业银行<br>14055810	广州农村商业银行<br>04135810	广州银行<br>CUPS（暂不支持）	中国银联<br>65012900	上海农村商业银行<br>POST（暂不支持）	中国邮政<br>04031000	北京银行<br>03170000	渤海银行<br>14181000	北京农商银行<br>04240001	南京银行<br>03030000	中国光大银行<br>26150704	东亚银行<br>01033320	宁波银行<br>04233310	杭州银行<br>05105840	平安银行<br>04403600	徽商银行<br>03160000	浙商银行<br>04012900	上海银行<br>01000000	中国邮政储蓄银行<br>05213000	江苏银行<br>04202220	大连银行 (必填)
+phoneNo | 手机号,手机11位号码 (必填)
+flag | 快捷鉴权或是支付的标志字段,"sign"代表鉴权，"pay"代表支付 (必填)
+phoneNo | 手机号,手机11位号码 (必填)
+expiredDate | 信用卡有效日期, 信用卡的有效日期,使用信用卡时必填 (选填)
+cvv2 | 信用卡验证码, 信用卡背后的三位验证码，使用信用卡时必填 (选填)
+phoneToken | 手机校验码令牌， 鉴权令牌已返回，发起支付时必填 (选填)
+phoneVerCode | 一般为6位，是民生电商发给用户的， 发起快捷支付时必填 (选填)
+
+
+
+
 ## Demo
 项目文件夹demo为我们的样例项目，详细展示如何使用java sdk.  
 •关于支付宝的return_url  

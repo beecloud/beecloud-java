@@ -5,6 +5,10 @@ import java.util.List;
 
 import cn.beecloud.BCEumeration.RESULT_TYPE;
 
+/**
+ * @author Ray
+ * @since 2015/10/22
+ */
 public class BCMSWebQueryResult {
 	
 	private String errMsg;

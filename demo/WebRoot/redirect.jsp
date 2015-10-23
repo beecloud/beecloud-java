@@ -367,7 +367,7 @@
 			BCMSWebPayParameter param = new BCMSWebPayParameter(PAY_CHANNEL.MS_WEB, 100, msBillNo, title, subject);
 			param.setReturnUrl("http://www.163.com");
 			
-			bcPayResult = BCPay.startBCMingShengPay(param);
+			bcPayResult = BCPay.startBCMSWebPay(param);
 			if (bcPayResult.getType().ordinal() == 0) {
 				System.out.println(bcPayResult.getObjectId());
 				out.println(bcPayResult.getObjectId());
@@ -382,8 +382,7 @@
 		} else if (type.equals("msWap")) {
 			String msBillNo = billNo.substring(10);
 			System.out.println("msBillNo:" + msBillNo);
-			BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title);
-			param.setSubject("1172001");
+			BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, sube);
 			param.setCustId("001986");
 			param.setCustName("冯睿");
 			param.setCustIdType("0");
@@ -391,8 +390,9 @@
 			param.setBankNo("03080000");
 			param.setCardNo("6214835124826288");
 			param.setPhoneNo("13861331391");
+			param.setFlag("sign");
 			
-			bcPayResult = BCPay.startBCMingShengPay(param);
+			bcPayResult = BCPay.startBCMSWapPay(param);
 			if (bcPayResult.getType().ordinal() == 0) {
 				
 			BCMSWapPayResult msResult = (BCMSWapPayResult)bcPayResult;
@@ -402,8 +402,9 @@
 				Thread.sleep(5000);
 				param.setPhoneToken(phoneToken);
 				param.setPhoneVerCode(phoneToken);
+				param.setFlag("pay");
 				
-				msResult = BCPay.startBCMingShengPay(param);
+				msResult = BCPay.startBCMSWapPay(param);
 				if (msResult.getType().ordinal() == 0) {
 					out.println(msResult.getSucessMsg());
 					out.println(msResult.getChannelTradeNo());

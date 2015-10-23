@@ -14,8 +14,8 @@
 </head>
 <body>
 <%
-	String subChannel = request.getParameter("refundId");
-	BCQueryStatusResult result = BCPay.startRefundUpdate(channelEnum, refund_no);
+	String refundId = request.getParameter("refundId");
+	BCQueryStatusResult result = BCPay.startMSWebRefundUpdate(refundId);
 	if (result.getType().ordinal() == 0 ) {
 		out.println(result.getRefundStatus());
 	} else {

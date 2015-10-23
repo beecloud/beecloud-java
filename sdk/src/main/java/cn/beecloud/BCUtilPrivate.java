@@ -114,6 +114,10 @@ class BCUtilPrivate {
 		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/refund";
 	}
 	
+	static String getkApiMingShengWebRefundUpdate() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/refund/status";
+	}
+	
 	static String transferDateFromLongToString(long millisecond) {
 		Date date = new Date(millisecond);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

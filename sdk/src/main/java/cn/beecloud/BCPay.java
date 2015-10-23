@@ -695,20 +695,20 @@ public class BCPay {
     }
     
     /**
-	 * @param para {@link BCPayParameter}支付参数
+     * 发起明生网关支付
+	 * @param para {@link BCMSWebPayParameter}支付参数
 	 * (必填)
-	 * @return 调起明生电商后的返回结果
+	 * @return 调起明生电商网关支付后的返回结果
 	 */
-    public static BCPayResult startBCMingShengPay(BCPayParameter para) {
+    public static BCPayResult startBCMSWebPay(BCMSWebPayParameter para) {
     	
     	BCPayResult result;
     	
         Map<String, Object> param = new HashMap<String, Object>();
         
-        buildPayParam(param, para);
+        buildMSWebPayParam(param, para);
         result = new BCPayResult();
         
-        PAY_CHANNEL channel = para.getChannel();
         Client client = BCAPIClient.client;
         WebTarget target = client.target(BCUtilPrivate.getkApiMingShengPay());
         try {
@@ -741,20 +741,42 @@ public class BCPay {
     }
     
     /**
+     * 发起明生快捷支付或鉴权
 	 * @param para {@link BCMSWapPayParameter}支付参数
 	 * (必填)
-	 * @return 调起明生电商获取令牌的返回结果
+	 * @return 调起明生电商快捷：获取令牌或者发起支付
 	 */
-    public static BCMSWapPayResult startBCMingShengPay(BCMSWapPayParameter para) {
+    public static BCMSWapPayResult startBCMSWapPay(BCMSWapPayParameter para) {
     	
     	BCMSWapPayResult result;
     	
         Map<String, Object> param = new HashMap<String, Object>();
         
-        buildPayParam(param, para);
+        buildMSWapPayParam(param, para);
+        
+        param.put("cust_id", para.getCustId());
+    	param.put("card_no", para.getCardNo());
+    	param.put("cust_name", para.getCustName());
+    	param.put("cust_id_no", para.getCustIdNo());
+    	param.put("cust_id_type", para.getCustIdType());
+    	param.put("bank_no", para.getBankNo());
+    	param.put("phone_no", para.getPhoneNo());
+    	if (para.getExpiredDate() != null) {
+    		param.put("expired_date", para.getExpiredDate());
+    	}
+    	if (para.getCvv2() != null) {
+    		param.put("cvv2", para.getCvv2());
+    	}
+    	if (para.getPhoneToken() != null) {
+    		param.put("phone_token", para.getPhoneToken());
+    	}
+    	if (para.getPhoneVerCode() != null) {
+    		param.put("phone_ver_code", para.getPhoneVerCode());
+    	}
+    	param.put("flag", para.getFlag());
+    
         result = new BCMSWapPayResult();
         
-        PAY_CHANNEL channel = para.getChannel();
         Client client = BCAPIClient.client;
         WebTarget target = client.target(BCUtilPrivate.getkApiMingShengPay());
         try {
@@ -791,10 +813,16 @@ public class BCPay {
     }
     
     /**
-	 * @param para billNo
-	 * @return 发起退款的返回结果
+     * 发起明生网关退款
+	 * @param billNo 商户订单号, 8到30位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复	
+	 * （必填）
+	 * @param refundFee 退款金额， 必须是正整数，单位为分，最低100分
+	 * （必填）
+	 * @param refundNo 商户退款单号，格式为:退款日期(8位) + 流水号(3~24 位)。请自行确保在商户系统中唯一，且退款日期必须是发起退款的当天日期,同一退款单号不可重复提交，否则会造成退款单重复。流水号可以接受数字或英文字符，建议使用数字，但不可接受“000”
+	 * （必填）
+	 * @return BCMSRefundResult 发起退款的返回结果
 	 */
-    public static BCMSRefundResult startMingShengRefund(String billNo, Integer refundFee, String refundNo) {
+    public static BCMSRefundResult startMSWebRefund(String billNo, Integer refundFee, String refundNo) {
     	 
     	BCMSRefundResult result;
     	
@@ -842,8 +870,9 @@ public class BCPay {
     }
     
     /**
-     * Bill Query by Id.
-     * @param channelTradeNo the id to query by.
+     * 发起明生快捷之单笔订单查询
+     * @param channelTradeNo 渠道交易号，就是快捷支付返回的refNo，由快捷支付时返回的
+     * （必填）
      * @return BCMSWapQueryResult
      */
     public static BCMSWapQueryResult startQueryMSWapBillById(String channelTradeNo) {
@@ -903,8 +932,9 @@ public class BCPay {
     }
     
     /**
-     * Bill Query by Id.
-     * @param billNo the id to query by.
+     * 发起明生网关之单笔订单查询
+     * @param billNo 商户订单号，8到30位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复
+     * （必填）
      * @return BCMSWebQueryResult
      */
     public static BCMSWebQueryResult startQueryMSWebBillById(String billNo) {
@@ -966,10 +996,37 @@ public class BCPay {
     }
     
     /**
-     * Bill Batch Query.
-     * @param payBank
-     * @param startDate
-     * @param endDate
+     * 发起明生网关之批量订单查询
+     * @param payBank 支付银行，要查询的银行支付渠道；无值则查所有银行，一下是支持的银行
+     * CCB	中国建设银行B2C支付渠道
+	 * ABC	中国农业银行B2C支付渠道
+	 * ICBC	中国工商银行B2C支付渠道
+	 * BOC	交通银行B2C支付渠道
+	 * GDB	广东发展银行B2C支付渠道
+	 * CMB	招商银行B2C支付渠道
+	 * CMSB	中国民生银行B2C支付渠道
+	 * SPDB	上海浦东发展银行B2C支付渠道
+	 * HXB	华夏银行B2C支付渠道
+	 * FUDIAN	富滇银行B2C支付渠道
+	 * POST	中国邮政B2C支付渠道
+	 * BCN	中国银行
+	 * CITIC  中信银行B2C支付渠道（与银行对接中）
+	 * SZDB	 深圳发展银行B2C支付渠道
+	 * CIB	兴业银行B2C支付渠道
+	 * CEB	光大银行B2C支付渠道
+	 * B2B_CCB	中国建设银行B2B支付渠道
+	 * B2B_ABC	中国农业银行B2B支付渠道
+	 * B2B_ICBC	中国工商银行B2B支付渠道
+	 * B2B_ZSYH	招商银行B2B支付渠道（与银行对接中）
+	 * B2B_SPDB	浦发银行B2B支付渠道（与银行对接中）
+	 * MEM	所有会员支付
+	 * B2B	所有b2b支付
+	 * B2C	所有B2C支付
+	 * （选填）
+     * @param startDate 开始时间， Date类型
+     * （必填）
+     * @param endDate 结束时间， Date类型
+     * （必填）
      * @return BCMSWebQueryResult
      */
     public static BCMSWebQueryResult startQueryMSWebBill(String payBank, Date startDate, Date endDate) {
@@ -981,11 +1038,11 @@ public class BCPay {
 	     param.put("timestamp", System.currentTimeMillis());
 	     param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
          if (payBank != null) {
-        	 param.put("payBank", payBank);
+        	 param.put("pay_bank", payBank);
          }
          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-         param.put("startTime", sdf.format(startDate));
-         param.put("endTime", sdf.format(endDate));
+         param.put("start_time", sdf.format(startDate));
+         param.put("end_time", sdf.format(endDate));
          
          result = new BCMSWebQueryResult();
     	
@@ -1041,6 +1098,14 @@ public class BCPay {
     	return result;
     }
     
+    /**
+     * 发起明生网关之批量退款查询
+     * @param startDate 开始日期 Date类型
+     * (必填)
+     * @param endDate 结束日期 Date类型
+     * （必填）
+     * @return BCMSWebQueryResult
+     */
     public static BCMSWebQueryResult startQueryMSWebRefund(Date startDate, Date endDate) {
     	
     	BCMSWebQueryResult result;
@@ -1050,8 +1115,8 @@ public class BCPay {
 	     param.put("timestamp", System.currentTimeMillis());
 	     param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-         param.put("startTime", sdf.format(startDate));
-         param.put("endTime", sdf.format(endDate));
+         param.put("begin_date", sdf.format(startDate));
+         param.put("end_date", sdf.format(endDate));
          
          result = new BCMSWebQueryResult();
     	
@@ -1079,7 +1144,7 @@ public class BCPay {
                 		BCMSWebRefundBean bean = new BCMSWebRefundBean();
                 		bean.setAmount(map.get("amount").toString());
                 		bean.setApplyDate(map.get("applyDate").toString());
-                		bean.setStartFlag(map.get("startFlag").toString());
+                		bean.setStartFlag(map.get("startflag").toString());
                 		bean.setMerchantId(map.get("merchantId").toString());
                 		bean.setMerOrderId(map.get("merOrderId").toString());
                 		bean.setPayorderId(map.get("payorderId").toString());
@@ -1109,7 +1174,13 @@ public class BCPay {
     	return result;
     }
     
-    public static BCQueryStatusResult startMSWebRefundUpdate(String refundId) {
+    /**
+     * 明生网关之单笔退款更新
+     * @param channelRefundNo 平台退款流水号, 平台退款流水号,在民生电商系统中唯一，用于单笔退款查询,从退款处获得
+     * （必填）
+     * @return BCQueryStatusResult
+     */
+    public static BCQueryStatusResult startMSWebRefundUpdate(String channelRefundNo) {
 
     	BCQueryStatusResult result;
     	
@@ -1117,16 +1188,17 @@ public class BCPay {
         param.put("app_id", BCCache.getAppID());
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
-        param.put("channel_refund_no", refundId);
+        param.put("channel_refund_no", channelRefundNo);
         
         result = new BCQueryStatusResult();
         StringBuilder sb = new StringBuilder();   
-        sb.append(BCUtilPrivate.getkApiRefundUpdate());
+        sb.append(BCUtilPrivate.getkApiMingShengWebRefundUpdate());
         
         
         Client client = BCAPIClient.client;
         
         try {
+        	sb.append("?para=");
         	sb.append(URLEncoder.encode(
                     JSONObject.fromObject(param).toString(), "UTF-8"));
         	WebTarget target = client.target(sb.toString());
@@ -1220,27 +1292,6 @@ public class BCPay {
         	param.put("cardpwd", para.getCardPwd());
         	param.put("frqid", para.getFrqid());
         } 
-        if (para.getChannel().equals(PAY_CHANNEL.MS_WAP)) {
-        	BCMSWapPayParameter mgPara = (BCMSWapPayParameter)para;
-        	param.put("custId", mgPara.getCustId());
-        	param.put("cardNo", mgPara.getCardNo());
-        	param.put("custName", mgPara.getCustName());
-        	param.put("custIdNo", mgPara.getCustIdNo());
-        	param.put("custIdType", mgPara.getCustIdType());
-        	param.put("bankNo", mgPara.getBankNo());
-        	param.put("phoneNo", mgPara.getPhoneNo());
-        	param.put("subject", mgPara.getSubject());
-        	if (mgPara.getPhoneToken() != null) {
-        		param.put("phoneToken", mgPara.getPhoneToken());
-        	}
-        	if (mgPara.getPhoneVerCode() != null) {
-        		param.put("phoneVerCode", mgPara.getPhoneVerCode());
-        	}
-        }
-        if (para.getChannel().equals(PAY_CHANNEL.MS_WEB)) {
-        	BCMSWebPayParameter msPara = (BCMSWebPayParameter)para;
-        	param.put("subject", msPara.getSubject());
-        }
 	}
     
     /**
@@ -1446,4 +1497,46 @@ public class BCPay {
     	return bcRefund;
     }
     
+    /**
+     * Build Payment parameters
+     * @param param to be built
+     * @param para used for building 
+     */
+    private static void buildMSWebPayParam(Map<String, Object> param,
+			BCMSWebPayParameter para) {
+    	
+    	param.put("app_id", BCCache.getAppID());
+        param.put("timestamp", System.currentTimeMillis());
+        param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
+        param.put("channel", para.getChannel().toString());
+        param.put("total_fee", para.getTotalFee());
+        param.put("bill_no", para.getBillNo());
+        param.put("title", para.getTitle());
+		param.put("return_url", para.getReturnUrl());
+		param.put("subject", para.getSubject());
+		if (para.getOptional() != null && para.getOptional().size() > 0) {
+			param.put("optional", para.getOptional());
+		}
+	}
+    
+    /**
+     * Build Payment parameters
+     * @param param to be built
+     * @param para used for building 
+     */
+    private static void buildMSWapPayParam(Map<String, Object> param,
+			BCMSWapPayParameter para) {
+    	
+    	param.put("app_id", BCCache.getAppID());
+        param.put("timestamp", System.currentTimeMillis());
+        param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
+        param.put("channel", para.getChannel().toString());
+        param.put("total_fee", para.getTotalFee());
+        param.put("bill_no", para.getBillNo());
+        param.put("title", para.getTitle());
+		param.put("subject", para.getSubject());
+		if (para.getOptional() != null && para.getOptional().size() > 0) {
+			param.put("optional", para.getOptional());
+		}
+	}
 }

@@ -202,11 +202,11 @@ input {
 				</li>
 				<li onclick="paySwitch(this)">
 					<input type="radio"  value="msWeb" name="paytype">
-					<img src="" alt="MINGSHENG_WEB"/>
+					<img src="./images/msWeb.png" alt="MINGSHENG_WEB"/>
 				</li>
 				<li onclick="paySwitch(this)">
 					<input type="radio"  value="msWap" name="paytype">
-					<img src="" alt="MINGSHENG_WAP"/>
+					<img src="./images/msWap.png" alt="MINGSHENG_WAP"/>
 				</li>
   		    </ul>
 		</div>
@@ -258,15 +258,15 @@ input {
 				</li>
 				<li onclick="querySwitch(this)">
 					<input type="radio"  value="msWebQuery" name="querytype">
-					<img src="" alt="民生网关批量">
+					<img src="./images/webbatch.png" alt="民生网关批量">
 				</li>
 				<li onclick="querySwitch(this)">
 					<input type="radio"  value="msWebQueryById" name="querytype">
-					<img src="" alt="民生网关单笔">
+					<img src="./images/webQuery.png" alt="民生网关单笔">
 				</li>
 				<li onclick="querySwitch(this)">
 					<input type="radio"  value="msWapQueryById" name="querytype">
-					<img src="" alt="民生快捷单笔">
+					<img src="./images/wapQuery.png" alt="民生快捷单笔">
 				</li>
 				<li onclick="querySwitch(this)">
 					<input type="radio"  value="noChannelQuery" name="querytype">

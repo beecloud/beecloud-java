@@ -264,8 +264,8 @@
 				pageContext.setAttribute("msRefundList", result.getMsRefundBeanList());
 				pageContext.setAttribute("count", result.getCount());
 			} else {
-				out.println(bcQueryResult.getErrMsg());
-				out.println(bcQueryResult.getErrDetail());
+				out.println(result.getErrMsg());
+				out.println(result.getErrDetail());
 			}	
 		}
 	}else {
@@ -458,7 +458,10 @@
 				out.println(bcQueryResult.getErrDetail());
 			}
 		} else if (querytype.equals("msWebQuery")) {
-			BCMSWebQueryResult result = BCPay.startQueryMSWebBill(null, new Date(), new Date());
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.MONTH, -1);
+			Date startDate = cal.getTime();
+			BCMSWebQueryResult result = BCPay.startQueryMSWebBill(null, startDate, new Date());
 			if (result.getType().ordinal() == 0) {
 				pageContext.setAttribute("msWebBills", result.getMsBeanList());
 				pageContext.setAttribute("count", result.getCount());
@@ -468,7 +471,7 @@
 			}
 			
 		} else if (querytype.equals("msWebQueryById")) {
-			BCMSWebQueryResult result = BCPay.startQueryMSWebBillById("7f8fba9194db0bced65f09d9381f2");
+			BCMSWebQueryResult result = BCPay.startQueryMSWebBillById("117220151020102731");
 			if (result.getType().ordinal() == 0) {
 				pageContext.setAttribute("msBean", result.getMsBean());
 			} else {
@@ -520,6 +523,7 @@
 	</table>
 </c:if>
 
+<!--网关批量  -->
 <c:if test="${msWebBills != null and count !=0}">
 	<table border="3" class="table"><tr><th>平台交易号</th><th>商户订单号</th><th>平台接受订单时间</th><th>金额</th><th>支付银行</th><th>状态</th><th>交易类型</th><th>发起退款</th></tr>
 		<c:forEach var="bill" items="${msWebBills}" varStatus="index"> 
@@ -533,11 +537,12 @@
 	</table>
 </c:if>
 
+<!--网关单笔  -->
 <c:if test="${msBean != null}">
 	<table border="3" class="table"><tr><th>平台交易号</th><th>商户订单号</th><th>平台接受订单时间</th><th>金额</th><th>支付银行</th><th>状态</th><th>交易类型</th><th>发起退款</th></tr>
 			<tr><td>${msBean.payOrderId}</td><td>${msBean.merOrderId}</td><td>${msBean.merSendTime}</td><td>${msBean.amountSum}</td><td>${msBean.payBank}</td><td>${msBean.state}</td><td>${msBean.type}</td>
 				<td align="center" >
-					<input class="button" type="button" onclick="startMSWebRefund('${bill.merOrderId}')" value="退款"/>
+					<input class="button" type="button" onclick="startMSWebRefund('${msBean.merOrderId}')" value="退款"/>
 				</td>
 			</tr>
 	</table>
