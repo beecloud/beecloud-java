@@ -790,6 +790,7 @@ public class BCPay {
             		if (ret.containsKey("phoneToken")) {
                 		result.setPhoneToken(ret.get("phoneToken").toString());
                 	} else {
+                		result.setObjectId(ret.get("id").toString());
                 		result.setChannelTradeNo(ret.get("refNo").toString());
                 		result.setSucessMsg("交易成功！");
                 	}

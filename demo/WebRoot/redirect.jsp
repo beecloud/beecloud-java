@@ -364,7 +364,7 @@
 			String msBillNo = billNo.substring(3);
 			String subject = "1172001";
 			System.out.println("msBillNo:" + msBillNo);
-			BCMSWebPayParameter param = new BCMSWebPayParameter(PAY_CHANNEL.MS_WEB, 100, msBillNo, title, subject);
+			BCMSWebPayParameter param = new BCMSWebPayParameter(PAY_CHANNEL.MS_WEB, 1, "a030d58be4d1c81eec46118f7d2cc", title, subject);
 			param.setReturnUrl("http://www.163.com");
 			
 			bcPayResult = BCPay.startBCMSWebPay(param);
@@ -389,9 +389,10 @@
 			param.setCustIdType("0");
 			param.setCustIdNo("320503198306271012");
 			param.setBankNo("03080000");
-			param.setCardNo("6214835124826288");
+			param.setCardNo("6214835124826212");
 			param.setPhoneNo("13861331391");
 			param.setFlag("sign");
+			param.setExpiredDate("0916");
 			
 			bcPayResult = BCPay.startBCMSWapPay(param);
 			if (bcPayResult.getType().ordinal() == 0) {
@@ -401,12 +402,13 @@
 			System.out.println("phoneToken" + phoneToken);
 				out.println(phoneToken);
 				Thread.sleep(5000);
-				param.setPhoneToken(phoneToken);
+				param.setPhoneToken("777hhhh55666");
 				param.setPhoneVerCode(phoneToken);
 				param.setFlag("pay");
 				
 				msResult = BCPay.startBCMSWapPay(param);
 				if (msResult.getType().ordinal() == 0) {
+					out.println(msResult.getObjectId());
 					out.println(msResult.getSucessMsg());
 					out.println(msResult.getChannelTradeNo());
 				} else {

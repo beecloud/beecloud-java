@@ -479,7 +479,7 @@
 				out.println(result.getErrDetail());
 			}
 		} else if (querytype.equals("msWapQueryById")) {
-			BCMSWapQueryResult result = BCPay.startQueryMSWapBillById("QP201510211657278379");
+			BCMSWapQueryResult result = BCPay.startQueryMSWapBillById("QP201510231659258604");
 			if (result.getType().ordinal() == 0) {
 				pageContext.setAttribute("msWapBean", result);
 			} else {
