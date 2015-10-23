@@ -667,13 +667,151 @@ custIdType | 客户证件类型：<br>0	身份证类型<br>1	护照类型<br>2	�
 bankNo | 银行编号,需要快捷支付的银行号:03080000	招商银行<br> 01020000	中国工商银行<br>01030000	中国农业银行<br>01050000	中国建设银行<br>01040000	中国银行<br>03100000	浦发银行<br>03010000	中国交通银行 <br>03050000	中国民生银行<br>SDB（暂不支持）	深圳发展银行<br>03060000	广东发展银行<br>03020000	中信银行<br>03040000	华夏银行<br>03090000	兴业银行<br>14055810	广州农村商业银行<br>04135810	广州银行<br>CUPS（暂不支持）	中国银联<br>65012900	上海农村商业银行<br>POST（暂不支持）	中国邮政<br>04031000	北京银行<br>03170000	渤海银行<br>14181000	北京农商银行<br>04240001	南京银行<br>03030000	中国光大银行<br>26150704	东亚银行<br>01033320	宁波银行<br>04233310	杭州银行<br>05105840	平安银行<br>04403600	徽商银行<br>03160000	浙商银行<br>04012900	上海银行<br>01000000	中国邮政储蓄银行<br>05213000	江苏银行<br>04202220	大连银行 (必填)
 phoneNo | 手机号,手机11位号码 (必填)
 flag | 快捷鉴权或是支付的标志字段,"sign"代表鉴权，"pay"代表支付 (必填)
-phoneNo | 手机号,手机11位号码 (必填)
 expiredDate | 信用卡有效日期, 信用卡的有效日期,使用信用卡时必填 (选填)
 cvv2 | 信用卡验证码, 信用卡背后的三位验证码，使用信用卡时必填 (选填)
 phoneToken | 手机校验码令牌， 鉴权令牌已返回，发起支付时必填 (选填)
 phoneVerCode | 一般为6位，是民生电商发给用户的， 发起快捷支付时必填 (选填)
 
+### <a name="msWebQuery">网关单笔订单查询</a>
 
+网关单笔订单查询接口，此接口返回BCMSWebQueryResult对象，BCMSWebQueryResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWebQueryResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用getMsBean()方法，getMsBean()方法返回封装网关订单记录的BCMSWebOrderBean对象。
+
+```java
+BCMSWebQueryResult result = BCPay.startQueryMSWebBillById(billNo);
+if (result.getType().ordinal() == 0) {
+	pageContext.setAttribute("msBean", result.getMsBean());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}
+```
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+billNo | 商户订单号，8到30位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复，（必填）
+
+### <a name="msWapQuery">快捷单笔订单查询</a>
+
+快捷单笔订单查询接口，此接口返回BCMSWapQueryResult对象，BCMSWapQueryResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWapQueryResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态获取BCMSWapQueryResult的各个属性。
+
+```java
+BCMSWapQueryResult result = BCPay.startQueryMSWapBillById(channelTradeNo);
+if (result.getType().ordinal() == 0) {
+	out.println(result.getTxnType());
+	out.println(result.getTxnStat());
+	out.println(result.getAmount());
+	out.println(result.getMerTransTime());
+	out.println(result.getMerOrderId());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}
+```
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+channelTradeNo | 渠道交易号，即由快捷支付时返回的channelTradeNo，（必填）
+
+### <a name="msWebQueryBatch">网关批量订单查询</a>
+
+快捷单笔订单查询接口，此接口返回BCMSWebQueryResult对象，BCMSWebQueryResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWebQueryResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用BCMSWebQueryResult的getMsBeanList()方法获取封装网关订单对象BCMSWebOrderBean的集合及getCount()获取批量查询的总数量。
+
+```java
+BCMSWebQueryResult result = BCPay.startQueryMSWebBill(null, startDate, endDate);
+if (result.getType().ordinal() == 0) {
+	pageContext.setAttribute("msWebBills", result.getMsBeanList());
+	pageContext.setAttribute("count", result.getCount());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}
+```
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+payBank | 支付银行，要查询的银行支付渠道；无值则查所有银行，以下是支持的银行:<br>CCB	中国建设银行<br>B2C 支付渠道<br>ABC	中国农业银行B2C支付渠道<br>ICBC	中国工商银行B2C支付渠道<br>BOC	交通银行B2C支付渠道<br>GDB	广东发展银行B2C支付渠道<br>CMB	招商银行B2C支付渠道<br>CMSB	中国民生银行B2C支付渠道<br>SPDB	上海浦东发展银行B2C支付渠道<br>HXB	华夏银行B2C支付渠道<br>FUDIAN	富滇银行B2C支付渠道<br>POST	中国邮政B2C支付渠道<br>BCN	中国银行<br>CITIC  中信银行B2C支付渠道（与银行对接中）<br>SZDB	 深圳发展银行B2C支付渠道<br>CIB	兴业银行B2C支付渠道<br>CEB	光大银行B2C支付渠道<br>B2B_CCB	中国建设银行B2B支付渠道<br>B2B_ABC	中国农业银行B2B支付渠道<br>B2B_ICBC	中国工商银行B2B支付渠道<br>B2B_ZSYH	招商银行B2B支付渠道（与银行对接中）<br>B2B_SPDB	浦发银行B2B支付渠道（与银行对接中）<br>MEM	所有会员支付<br>B2B	所有b2b支付<br>B2C	所有B2C支付（选填）
+startDate | 开始时间， Date类型，（必填）
+endDate | 结束时间， Date类型，（必填）
+
+
+### <a name="msWebRefund">网关退款</a>
+
+网关退款接口，此接口返回BCMSRefundResult对象，BCMSRefundResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWebQueryResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用BCMSRefundResult的getRefundId()方法获取退款流水号,用于单笔退款查询。
+```java
+BCMSRefundResult result = BCPay.startMSWebRefund(billNo, 100, refundNo);
+if (result.getType().ordinal() == 0 ) {
+	out.println(result.getObjectId());
+	System.out.println(result.getObjectId());
+	Thread.sleep(5000);
+	out.println(result.getRefundId());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}
+```
+
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+billNo | 商户订单号, 8到30位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复，（必填）
+refundFee | 退款金额， 必须是正整数，单位为分，最低100分，（必填）
+refundNo | 商户退款单号，格式为:退款日期(8位) + 流水号(3~24 位)。请自行确保在商户系统中唯一，且退款日期必须是发起退款的当天日期,同一退款单号不可重复提交，否则会造成退款单重复。流水号可以接受数字或英文字符，建议使用数字，但不可接受“000”，（必填）
+
+### <a name="msWebBatchRefundQuery">网关批量退款查询</a>
+
+网关批量退款查询接口，此接口返回BCMSWebQueryResult对象，BCMSWebQueryResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWebQueryResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用BCMSWebQueryResult的getMsRefundBeanList()方法获取封装网关退款对象BCMSWebRefundBean的集合及getCount()获取批量查询的总数量。
+
+```java
+BCMSWebQueryResult result = BCPay.startQueryMSWebRefund(startDate, endDate);
+if (result.getType().ordinal() == 0) {
+	pageContext.setAttribute("msRefundList", result.getMsRefundBeanList());
+	pageContext.setAttribute("count", result.getCount());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}	
+```
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+startDate | 开始日期 Date类型，（必填）
+endDate | 结束日期 Date类型，（必填）
+
+
+### <a name="msWebRefundUpdate">网关单笔退款更新</a>
+
+网关单笔退款更新接口，此接口返回BCQueryStatusResult对象，BCBCQueryStatusResult对象包含两种状态，正确状态和错误状态，正确状态的BCQueryStatusResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用BCMSWebQueryResult的getRefundStatus()方法获取网关退款状态。
+```java
+BCQueryStatusResult result = BCPay.startMSWebRefundUpdate(refundId);
+if (result.getType().ordinal() == 0 ) {
+	out.println(result.getRefundStatus());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}
+```
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+channelRefundNo | 平台退款流水号,在民生电商系统中唯一，用于单笔退款更新,从退款处获得，（必填）
 
 
 ## Demo
@@ -701,6 +839,9 @@ phoneVerCode | 一般为6位，是民生电商发给用户的， 发起快捷支
 
 •关于百度钱包的return_url  
 请参考demo中的 bdReturnUrl.jsp
+
+•关于民生网关的return_url  
+请参考demo中的 msReturnUrl.jsp
 
 •关于weekhook的接收  
 请参考demo中的 notifyUrl.jsp  文档请阅读 [webhook](https://github.com/beecloud/beecloud-webhook)
