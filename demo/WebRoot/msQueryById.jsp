@@ -14,11 +14,8 @@
 <link href="demo.css" rel="stylesheet" type="text/css"/>
 <title>Query Min Sheng Order By Id</title>
 <script type="text/javascript">
-	function queryStatus(channel, refund_no) {
-		window.location.href="refundUpdate.jsp?refund_no=" + refund_no + "&channel=" + channel;
-	}
-	function startRefund(bill_no, total_fee, channel) {
-		window.location.href="startRefund.jsp?bill_no=" + bill_no + "&total_fee=" + total_fee + "&channel=" + channel;
+	function startMSWebRefund(billNo) {
+		window.location.href="startMSWebRefund.jsp?bill_no=" + billNo;
 	}
 </script>
 </head>
