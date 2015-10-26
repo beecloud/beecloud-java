@@ -78,6 +78,46 @@ class BCUtilPrivate {
 		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/transfers";
 	}
 	
+	static String getkApiQueryBillCount() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/bills/count?para=";
+	}
+	
+	static String getkApiQueryRefundCount() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/refunds/count?para=";
+	}
+	
+	static String getkApiMingShengPay() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/bill";
+	}
+	
+	static String getkApiMingShengVerCode() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/bill";
+	}
+	
+	static String getkApiQueryMingShengWapBillById() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/kjquerybyid";
+	}
+	
+	static String getkApiQueryMingShengWebBillById() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/webquerybyid"; 
+	}
+	
+	static String getkApiQueryMingShengWebBill() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/querys"; 
+	}
+	
+	static String getkApiQueryMingShengWebRefund() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/refunds"; 
+	}
+	
+	static String getkApiMingShengRefund() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/refund";
+	}
+	
+	static String getkApiMingShengWebRefundUpdate() {
+		return BCCache.apiHostArray[(int)(Math.random()*4)] + "/" + BCUtilPrivate.kApiVersion + "/rest/minsheng/refund/status";
+	}
+	
 	static String transferDateFromLongToString(long millisecond) {
 		Date date = new Date(millisecond);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

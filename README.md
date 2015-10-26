@@ -542,6 +542,329 @@ id | 待查询订单记录的唯一标识符，（必填）
 return | BCQueryResult, 根据type决定返回内容
 
 
+## 民生电商
+
+以下是民生电商的接口，具体可参考Demo
+
+
+### <a name="msWeb">网关支付</a>
+
+网关支付接口接收BCMSWebPayParameter参数对象，该对象封装了发起支付所需的各个具体参数。
+发起支付将返回BCPayResult对象，BCPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCPayResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用getHtml()方法，getHtml()方法返回html,如将html输出至页面，即可开始民生网关支付。
+
+```java
+BCMSWebPayParameter param = new BCMSWebPayParameter(PAY_CHANNEL.MS_WEB, 100, billNo, title, subject);
+param.setReturnUrl("http://www.msyidai.com");
+			
+bcPayResult = BCPay.startBCMSWebPay(param);
+if (bcPayResult.getType().ordinal() == 0) {
+	out.println(bcPayResult.getObjectId());
+	out.println(bcPayResult.getHtml());
+}
+else {
+	//handle the error message as you wish！
+	out.println(bcPayResult.getErrMsg());
+	out.println(bcPayResult.getErrDetail());
+}
+```
+代码中的参数对象BCMSWebPayParameter封装字段含义如下：
+
+key | 说明
+---- | -----
+channel | 渠道类型，此处固定为"MS_WEB"（必填）
+totalFee | 订单总金额， 必须是正整数，单位为分，最低100分 (必填)
+subject | 商品种类，该参数，是从民生电商处获得 (必填)
+billNo | 商户订单号，8到30位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复 (必填)
+title | 订单标题，UTF8编码格式，32个字节内，最长支持16个汉字 (必填)
+optional | 附加数据，用户自定义的参数，将会在webhook通知中原样返回，该字段主要用于商户携带订单的自定义数据 (选填)
+returnUrl | 同步返回页面，支付渠道处理完请求后,当前页面自动跳转到商户网站里指定页面的http路径,不要包含localhost，否则渠道会认为非法(必填)
+
+### <a name="msWapSign">快捷鉴权</a>
+
+快捷鉴权接口接收BCMSWapPayParameter参数对象，该对象封装了发起快捷鉴权及支付所需的各个具体参数。
+
+发起快捷鉴权需要指定BCMSWapPayParameter对象的flag属性值为"sign"。
+
+此接口返回BCMSWapPayResult对象，BCMSWapPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWapPayResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用getPhoneToken()方法，getPhoneToken()方法返回鉴权令牌,用来作为发起快捷支付的输入参数。
+
+```java
+BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, subject);
+param.setCustId(custId);
+param.setCustName(custName);
+param.setCustIdType("0");
+param.setCustIdNo(custIdNo);
+param.setBankNo(bankNo);
+param.setCardNo(cardNo);
+param.setPhoneNo(phoneNo);
+param.setFlag("sign");//此处固定为"sign"
+
+BCMSWapPayResult bcMSWapPayResult = BCPay.startBCMSWapPay(param);
+if (bcMSWapPayResult.getType().ordinal() == 0) {
+    String phoneToken = bcMSWapPayResult.getPhoneToken();
+    //记录下phoneToken
+}
+else {
+	//handle the error message as you wish！
+	out.println(bcMSWapPayResult.getErrMsg());
+	out.println(bcMSWapPayResult.getErrDetail());
+}
+```
+
+### <a name="msWapPay">快捷支付</a>
+
+快捷支付和快捷鉴权调用同一接口，接收BCMSWapPayParameter参数对象，该对象封装了发起快捷鉴权及支付所需的各个具体参数。
+
+发起快捷支付需要指定BCMSWapPayParameter对象的flag属性值为"pay"。
+
+此接口返回BCMSWapPayResult对象，BCMSWapPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWapPayResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用getChannelTradeNo()方法，getChannelTradeNo()方法返回渠道订单号,用来作为发起快捷单笔订单查询的输入参数。
+
+```java
+BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, subject);
+param.setCustId(custId);
+param.setCustName(custName);
+param.setCustIdType("0");
+param.setCustIdNo(custIdNo);
+param.setBankNo(bankNo);
+param.setCardNo(cardNo);
+param.setPhoneNo(phoneNo);
+param.setFlag("pay");//此处固定为"pay"
+
+param.setPhoneToken(phoneToken);//鉴权返回的令牌
+param.setPhoneVerCode(phoneVerCode);//短信验证码
+
+BCMSWapPayResult bcMSWapPayResult = BCPay.startBCMSWapPay(param);
+if (bcMSWapPayResult.getType().ordinal() == 0) {
+    out.println(bcMSWapPayResult.getObjectId());
+    String phoneToken = bcMSWapPayResult.getChannelTradeNo();;
+    //记录下channelTradeNo
+}
+else {
+	//handle the error message as you wish！
+	out.println(bcMSWapPayResult.getErrMsg());
+	out.println(bcMSWapPayResult.getErrDetail());
+}
+```
+发起快捷鉴权、支付代码中的参数对象BCMSWapPayParameter封装字段含义如下：
+
+key | 说明
+---- | -----
+channel | 渠道类型，此处固定为"MS_WAP"（必填）
+totalFee | 订单总金额， 必须是正整数，单位为分，最低100分 (必填)
+subject | 商品种类，该参数，是从民生电商处获得 (必填)
+billNo | 商户订单号，8到30位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复 (必填)
+title | 订单标题，UTF8编码格式，32个字节内，最长支持16个汉字 (必填)
+optional | 附加数据，用户自定义的参数，将会在webhook通知中原样返回，该字段主要用于商户携带订单的自定义数据 (选填)
+custId | 客户号,28位以内的数字或字母的组合 (必填)
+cardNo | 卡号,借记卡和信用卡的卡号 (必填)
+custName | 客户姓名,UTF8编码格式，32个字节内，最长支持16个汉字 (必填)
+custIdNo | 证件号,身份证号，军官证等 (必填)
+custIdType | 客户证件类型：<br>0	身份证类型<br>1	护照类型<br>2	军官证<br>3	士兵证<br>4	港澳台通行证<br>5	临时身份证<br>6	户口本<br>7	其他类型证件<br>9	警官证<br>12	外国人居留证<br>15	回乡证<br>16	企业营业执照<br>17	法人代码证<br>18	台胞证0代表身份证 (必填)
+bankNo | 银行编号,需要快捷支付的银行号:<br>03080000	招商银行<br> 01020000	中国工商银行<br>01030000	中国农业银行<br>01050000	中国建设银行<br>01040000	中国银行<br>03100000	浦发银行<br>03010000	中国交通银行 <br>03050000	中国民生银行<br>SDB（暂不支持）	深圳发展银行<br>03060000	广东发展银行<br>03020000	中信银行<br>03040000	华夏银行<br>03090000	兴业银行<br>14055810	广州农村商业银行<br>04135810	广州银行<br>CUPS（暂不支持）	中国银联<br>65012900	上海农村商业银行<br>POST（暂不支持）	中国邮政<br>04031000	北京银行<br>03170000	渤海银行<br>14181000	北京农商银行<br>04240001	南京银行<br>03030000	中国光大银行<br>26150704	东亚银行<br>01033320	宁波银行<br>04233310	杭州银行<br>05105840	平安银行<br>04403600	徽商银行<br>03160000	浙商银行<br>04012900	上海银行<br>01000000	中国邮政储蓄银行<br>05213000	江苏银行<br>04202220	大连银行 (必填)
+phoneNo | 手机号,手机11位号码 (必填)
+flag | 快捷鉴权或是支付的标志字段,"sign"代表鉴权，"pay"代表支付 (必填)
+expiredDate | 信用卡有效日期, 信用卡的有效日期,使用信用卡时必填 (选填)
+cvv2 | 信用卡验证码, 信用卡背后的三位验证码，使用信用卡时必填 (选填)
+phoneToken | 手机校验码令牌， 鉴权令牌已返回，发起快捷支付时必填 (选填)
+phoneVerCode | 一般为6位，是民生电商发给用户的， 发起快捷支付时必填 (选填)
+
+### <a name="msWebQuery">网关单笔订单查询</a>
+
+网关单笔订单查询接口，此接口返回BCMSWebQueryResult对象，BCMSWebQueryResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWebQueryResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用getMsBean()方法，getMsBean()方法返回封装网关订单记录的BCMSWebOrderBean对象。
+
+```java
+BCMSWebQueryResult result = BCPay.startQueryMSWebBillById(billNo);
+if (result.getType().ordinal() == 0) {
+	pageContext.setAttribute("msBean", result.getMsBean());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}
+```
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+billNo | 商户订单号，8到30位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复，（必填）
+
+### <a name="msWapQuery">快捷单笔订单查询</a>
+
+快捷单笔订单查询接口，此接口返回BCMSWapQueryResult对象，BCMSWapQueryResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWapQueryResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态获取BCMSWapQueryResult的各个属性。
+
+```java
+BCMSWapQueryResult result = BCPay.startQueryMSWapBillById(channelTradeNo);
+if (result.getType().ordinal() == 0) {
+	out.println(result.getTxnType());
+	out.println(result.getTxnStat());
+	out.println(result.getAmount());
+	out.println(result.getMerTransTime());
+	out.println(result.getMerOrderId());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}
+```
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+channelTradeNo | 渠道交易号，即由快捷支付时返回的channelTradeNo，（必填）
+
+### <a name="msWebQueryBatch">网关批量订单查询</a>
+
+网关批量订单查询接口，此接口返回BCMSWebQueryResult对象，BCMSWebQueryResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWebQueryResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用BCMSWebQueryResult的getMsBeanList()方法获取封装网关订单对象BCMSWebOrderBean的集合及getCount()获取批量查询的总数量。
+
+```java
+BCMSWebQueryResult result = BCPay.startQueryMSWebBill(null, startDate, endDate);
+if (result.getType().ordinal() == 0) {
+	pageContext.setAttribute("msWebBills", result.getMsBeanList());
+	pageContext.setAttribute("count", result.getCount());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}
+```
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+payBank | 支付银行，要查询的银行支付渠道；无值则查所有银行，以下是支持的银行:<br>CCB	中国建设银行<br>B2C 支付渠道<br>ABC	中国农业银行B2C支付渠道<br>ICBC	中国工商银行B2C支付渠道<br>BOC	交通银行B2C支付渠道<br>GDB	广东发展银行B2C支付渠道<br>CMB	招商银行B2C支付渠道<br>CMSB	中国民生银行B2C支付渠道<br>SPDB	上海浦东发展银行B2C支付渠道<br>HXB	华夏银行B2C支付渠道<br>FUDIAN	富滇银行B2C支付渠道<br>POST	中国邮政B2C支付渠道<br>BCN	中国银行<br>CITIC  中信银行B2C支付渠道（与银行对接中）<br>SZDB	 深圳发展银行B2C支付渠道<br>CIB	兴业银行B2C支付渠道<br>CEB	光大银行B2C支付渠道<br>B2B_CCB	中国建设银行B2B支付渠道<br>B2B_ABC	中国农业银行B2B支付渠道<br>B2B_ICBC	中国工商银行B2B支付渠道<br>B2B_ZSYH	招商银行B2B支付渠道（与银行对接中）<br>B2B_SPDB	浦发银行B2B支付渠道（与银行对接中）<br>MEM	所有会员支付<br>B2B	所有b2b支付<br>B2C	所有B2C支付（选填）
+startDate | 开始时间， Date类型，（必填）
+endDate | 结束时间， Date类型，（必填）
+
+网关查询（包括网关单笔和批量查询）返回错误信息对照表
+
+Error id	|信息
+---- | ----
+1	| 请求数据格式校验未通过
+2	| 商户MAC校验不匹配
+3	| 组织商户查询结果数据失败
+4	| 获取新的MAC验证串失败
+5	| 将商户订查询结果据发送给商户失败
+7	| 商户编号为空
+8	| 商户不存在
+11	| 发送商户查询请求错误信息失败
+13	| 币种格式错误
+14	| 支付行错误
+15	| 账户编号错误
+16	| 交易号错误
+17	| 开始时间错误
+18	| 结束时间错误
+19	| 时间间隔错误
+
+
+### <a name="msWebRefund">网关退款</a>
+
+网关退款接口，此接口返回BCMSRefundResult对象，BCMSRefundResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSRefundResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用BCMSRefundResult的getRefundId()方法获取退款流水号,用于单笔退款查询。
+```java
+BCMSRefundResult result = BCPay.startMSWebRefund(billNo, 100, refundNo);
+if (result.getType().ordinal() == 0 ) {
+	out.println(result.getObjectId());
+	System.out.println(result.getObjectId());
+	Thread.sleep(5000);
+	out.println(result.getRefundId());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}
+```
+
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+billNo | 商户订单号, 8到30位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复，（必填）
+refundFee | 退款金额， 必须是正整数，单位为分，最低100分，（必填）
+refundNo | 商户退款单号，格式为:退款日期(8位) + 流水号(3~24 位)。请自行确保在商户系统中唯一，且退款日期必须是发起退款的当天日期,同一退款单号不可重复提交，否则会造成退款单重复。流水号可以接受数字或英文字符，建议使用数字，但不可接受“000”，（必填）
+
+退款返回错误信息对照表
+返回码|	含义
+---- | ---- 
+0000	| 申请成功
+0003	| 版本号不正确
+0004	| 传输的关键数据为空
+0005	| 自动退款处理,申请人字符过长
+0006	| mac校验不通过
+0007	| 未找到要退款的记录，可能已结算.
+0008	| 自动退款处理错误,存在退款中的记录.
+0009	| 退款金额大于可退款金额.
+0010	| 自动退款处理,输入金额小于或者等于0,不能退款.
+0011	| 该笔订单未汇总，请在系统汇总后再发起退款。（5点到23点之间，系统在支付完成后30分钟内完成汇总。）
+9999	| 其它错误
+
+### <a name="msWebBatchRefundQuery">网关批量退款查询</a>
+
+网关批量退款查询接口，此接口返回BCMSWebQueryResult对象，BCMSWebQueryResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWebQueryResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用BCMSWebQueryResult的getMsRefundBeanList()方法获取封装网关退款对象BCMSWebRefundBean的集合及getCount()获取批量查询的总数量。
+
+```java
+BCMSWebQueryResult result = BCPay.startQueryMSWebRefund(startDate, endDate);
+if (result.getType().ordinal() == 0) {
+	pageContext.setAttribute("msRefundList", result.getMsRefundBeanList());
+	pageContext.setAttribute("count", result.getCount());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}	
+```
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+startDate | 开始日期 Date类型，（必填）
+endDate | 结束日期 Date类型，（必填）
+
+退款查询返回错误信息对照表
+
+返回码|	含义
+---- | -----
+0000	| 查询成功
+0005	| 版本号不正确
+0006	| 传输的关键数据为空
+0007	| 此商户不存
+0008	| mac不匹配
+0009	| 两个日期不完整
+0010	| 开始时间或结束时间格式不正确
+0011	| 日期或退款id不能为空
+0012	| 退款id格式不正确
+0013	| 此退款记录不存在
+9999	| 其它错误
+
+### <a name="msWebRefundUpdate">网关单笔退款更新</a>
+
+网关单笔退款更新接口，此接口返回BCQueryStatusResult对象，BCQueryStatusResult对象包含两种状态，正确状态和错误状态，正确状态的BCQueryStatusResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
+
+正确状态调用BCQueryStatusResult的getRefundStatus()方法获取网关退款状态。PROCESSING:退款中；SUCCESS:退款成功；FAIL：退款失败
+```java
+BCQueryStatusResult result = BCPay.startMSWebRefundUpdate(refundId);
+if (result.getType().ordinal() == 0 ) {
+	out.println(result.getRefundStatus());
+} else {
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+}
+```
+代码中的各个参数含义如下：
+
+key | 说明
+---- | -----
+channelRefundNo | 平台退款流水号,在民生电商系统中唯一，用于单笔退款更新,从退款处获得(refundId)，（必填）
+
+
 ## Demo
 项目文件夹demo为我们的样例项目，详细展示如何使用java sdk.  
 •关于支付宝的return_url  
@@ -567,6 +890,9 @@ return | BCQueryResult, 根据type决定返回内容
 
 •关于百度钱包的return_url  
 请参考demo中的 bdReturnUrl.jsp
+
+•关于民生网关的return_url  
+请参考demo中的 msReturnUrl.jsp
 
 •关于weekhook的接收  
 请参考demo中的 notifyUrl.jsp  文档请阅读 [webhook](https://github.com/beecloud/beecloud-webhook)

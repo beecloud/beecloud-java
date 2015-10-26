@@ -200,6 +200,14 @@ input {
 					<input type="radio"  value="bdWap" name="paytype">
 					<img src="http://beeclouddoc.qiniudn.com/bdwap.png" alt="KUAIQIAN WEB">
 				</li>
+				<li onclick="paySwitch(this)">
+					<input type="radio"  value="msWeb" name="paytype">
+					<img src="./images/msWeb.png" alt="MINGSHENG_WEB"/>
+				</li>
+				<li onclick="paySwitch(this)">
+					<input type="radio"  value="msWap" name="paytype">
+					<img src="./images/msWap.png" alt="MINGSHENG_WAP"/>
+				</li>
   		    </ul>
 		</div>
 		<div style="clear: both;">
@@ -249,6 +257,10 @@ input {
 					<img src="http://beeclouddoc.qiniudn.com/bd.png" alt="BAIDU">
 				</li>
 				<li onclick="querySwitch(this)">
+					<input type="radio"  value="msWebQuery" name="querytype">
+					<img src="./images/webbatch.png" alt="民生网关批量">
+				</li>
+				<li onclick="querySwitch(this)">
 					<input type="radio"  value="noChannelQuery" name="querytype">
 					<img src="http://beeclouddoc.qiniudn.com/unionpay1122.png" alt="无渠道查询">
 				</li>
@@ -259,6 +271,18 @@ input {
 			<input name="queryRefund" type="submit" class="button" value="退款查询">
 		</div>
 	</form>
+	
+	<hr/>
+		<h2>根据订单号（网关）、渠道交易号（快捷）查询民生电商订单记录</h2>
+		<p>请输入订单号或者渠道交易号:</p>
+		<form action="msQueryById.jsp" method="POST" target="_blank">
+			<input type="text" name="billNo" style="display:block;width:300px;height:25px"> 
+			<div style="clear: both;">
+				<input name="msWebQueryById" type="submit" class="button" value="网关订单单笔查询">
+				<input name="msWapQueryById" type="submit" class="button" value="快捷订单单笔查询">
+			</div>
+		</form>
+	
 	
 	<hr/>
 	<div>

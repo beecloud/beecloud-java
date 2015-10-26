@@ -52,6 +52,7 @@
 		String aliReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/aliReturnUrl.jsp";
 		String unReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/unReturnUrl.jsp";
 		String bdReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/bdReturnUrl.jsp";
+		String msReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/msReturnUrl.jsp";
 		
 		//微信 公众号id（读取配置文件conf.properties）及微信 redirec_uri
 		Properties prop = loadProperty();
@@ -81,7 +82,7 @@
 			
 			BCPayParameter param = new BCPayParameter(PAY_CHANNEL.ALI_WEB, 1, billNo, title);
 			param.setReturnUrl(aliReturnUrl);
-			param.setBillTimeout(120);
+			param.setBillTimeout(200);
 			param.setOptional(optional);
 			
 			bcPayResult = BCPay.startBCPay(param);
@@ -117,7 +118,7 @@
 		} else if (type.equals("alipayWAP")) {
 			
 			BCPayParameter param = new BCPayParameter(PAY_CHANNEL.ALI_WAP, 1, billNo, title);
-			param.setBillTimeout(120);
+			param.setBillTimeout(140);
             
 			bcPayResult = BCPay.startBCPay(param);
             if (bcPayResult.getType().ordinal() == 0) {
@@ -206,7 +207,7 @@
 			param.setBillTimeout(180);
 			BeeCloud.registerApp("230b89e6-d7ff-46bb-b0b6-032f8de7c5d0", "191418f6-c0f5-4943-8171-d07bfeff46b0");
 			bcPayResult = BCPay.startBCPay(param);
-			BeeCloud.registerApp("c37d661d-7e61-49ea-96a5-68c34e83db3b", "c37d661d-7e61-49ea-96a5-68c34e83db3b");
+			BeeCloud.registerApp("c5d1cba1-5e3f-4ba0-941d-9b0a371fe719", "39a7a518-9ac8-4a9e-87bc-7885f33cf18c");
 			if (bcPayResult.getType().ordinal() == 0) {
 				out.println(bcPayResult.getObjectId());
 				Thread.sleep(5000);
@@ -353,6 +354,70 @@
 				out.println(bcPayResult.getObjectId());
 				Thread.sleep(5000);
 				response.sendRedirect(bcPayResult.getUrl());
+			}
+			else {
+				//handle the error message as you wish！
+				out.println(bcPayResult.getErrMsg());
+				out.println(bcPayResult.getErrDetail());
+			}
+		} else if (type.equals("msWeb")) {
+			String msBillNo = billNo.substring(3);
+			String subject = "xxxxxx";
+			System.out.println("msBillNo:" + msBillNo);
+			BCMSWebPayParameter param = new BCMSWebPayParameter(PAY_CHANNEL.MS_WEB, 100, msBillNo, title, subject);
+			param.setReturnUrl("http://www.163.com");
+			
+			bcPayResult = BCPay.startBCMSWebPay(param);
+			if (bcPayResult.getType().ordinal() == 0) {
+				System.out.println(bcPayResult.getObjectId());
+				out.println(bcPayResult.getObjectId());
+				Thread.sleep(5000);
+				out.println(bcPayResult.getHtml());
+			}
+			else {
+				//handle the error message as you wish！
+				out.println(bcPayResult.getErrMsg());
+				out.println(bcPayResult.getErrDetail());
+			}
+		} else if (type.equals("msWap")) {
+			String msBillNo = billNo.substring(10);
+			String subject = "1172001";
+			System.out.println("msBillNo:" + msBillNo);
+			BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, subject);
+			param.setCustId("0019860987654321234567890987");
+			param.setCustName("冯睿");
+			param.setCustIdType("0");
+			param.setCustIdNo("320503198306271012");
+			param.setBankNo("03080000");
+			param.setCardNo("5187187005718530");
+			param.setPhoneNo("13861331391");
+			param.setFlag("sign");
+			param.setExpiredDate("1119");
+			param.setCvv2("250");
+			
+			
+			bcPayResult = BCPay.startBCMSWapPay(param);
+			if (bcPayResult.getType().ordinal() == 0) {
+				
+			BCMSWapPayResult msResult = (BCMSWapPayResult)bcPayResult;
+			String phoneToken = msResult.getPhoneToken();
+			System.out.println("phoneToken" + phoneToken);
+				out.println(phoneToken);
+				Thread.sleep(5000);
+				param.setPhoneToken(phoneToken);
+				param.setPhoneVerCode(phoneToken);
+				param.setFlag("pay");
+				
+				msResult = BCPay.startBCMSWapPay(param);
+				if (msResult.getType().ordinal() == 0) {
+					out.println(msResult.getObjectId());
+					out.println(msResult.getSucessMsg());
+					out.println("channelTradeNo:" + msResult.getChannelTradeNo());
+				} else {
+					//handle the error message as you wish！
+					out.println(msResult.getErrMsg());
+					out.println(msResult.getErrDetail());
+				}
 			}
 			else {
 				//handle the error message as you wish！

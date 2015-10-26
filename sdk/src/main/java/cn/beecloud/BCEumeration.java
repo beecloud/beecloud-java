@@ -36,7 +36,10 @@ public class BCEumeration {
 		BD_WAP,
 		PAYPAL,
 		PAYPAL_SANDBOX,
-		PAYPAL_LIVE
+		PAYPAL_LIVE,
+		MS,
+		MS_WEB,
+		MS_WAP
 	}
 
 	public enum QR_PAY_MODE {

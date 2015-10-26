@@ -253,7 +253,9 @@ public class ValidationUtil
 						para.getChannel().equals(PAY_CHANNEL.ALI_QRCODE) || 
 						para.getChannel().equals(PAY_CHANNEL.UN_WEB) ||
 						para.getChannel().equals(PAY_CHANNEL.JD_WEB) ||
-						para.getChannel().equals(PAY_CHANNEL.JD_WAP))) {
+						para.getChannel().equals(PAY_CHANNEL.JD_WAP) ||
+						para.getChannel().equals(PAY_CHANNEL.MS_WEB) ||
+						para.getChannel().equals(PAY_CHANNEL.MS_WAP))) {
 			return new BCPayResult(RETURN_URL_EMPTY, RESULT_TYPE.VALIDATION_ERROR);
 		} else if (para.getChannel().equals(PAY_CHANNEL.WX_JSAPI) && StrUtil.empty(para.getOpenId())){
 			return new BCPayResult(OPENID_EMPTY, RESULT_TYPE.VALIDATION_ERROR);

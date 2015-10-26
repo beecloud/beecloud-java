@@ -26,6 +26,8 @@ public class BCQueryResult {
 	
 	private BCRefundBean refund;
 	
+	private Integer totalCount;
+	
 	//if the result is for bill query
     private List<BCOrderBean> bcOrders;
     
@@ -98,5 +100,13 @@ public class BCQueryResult {
 
 	public void setRefund(BCRefundBean refund) {
 		this.refund = refund;
+	}
+
+	public Integer getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(Integer totalCount) {
+		this.totalCount = totalCount;
 	}
 }
