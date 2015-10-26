@@ -911,7 +911,7 @@ public class BCPay {
                     result.setAmount(ret.get("amount").toString());
                     result.setTxnStat(ret.get("txnStat").toString());
                     result.setTxnType(ret.get("txnType").toString());
-                    result.setMerOrderId(ret.get("merTransTime").toString());
+                    result.setMerTransTime(ret.get("merTransTime").toString());
                     result.setMerOrderId(ret.get("merOrderId").toString());
                 } else {
                 	result.setErrMsg(ret.get("result_msg").toString());
@@ -970,13 +970,16 @@ public class BCPay {
 
                 if (isSuccess) {
                 	result.setType(RESULT_TYPE.OK);
-                    result.getMsBean().setAmountSum(ret.get("amountSum").toString());
-                    result.getMsBean().setPayOrderId(ret.get("payOrderId").toString());
-                    result.getMsBean().setMerOrderId(ret.get("merOrderId").toString());
-                    result.getMsBean().setMerSendTime(ret.get("merSendTime").toString());
-                    result.getMsBean().setPayBank(ret.get("payBank").toString());
-                    result.getMsBean().setType(ret.get("type").toString());
-                    result.getMsBean().setState(ret.get("state").toString());
+                	if (!ret.get("recordLength").equals("0")) {
+                		result.setMsBean(new BCMSWebOrderBean());
+	                    result.getMsBean().setAmountSum(ret.get("amountSum").toString());
+	                    result.getMsBean().setPayOrderId(ret.get("payOrderId").toString());
+	                    result.getMsBean().setMerOrderId(ret.get("merOrderId").toString());
+	                    result.getMsBean().setMerSendTime(ret.get("merSendTime").toString());
+	                    result.getMsBean().setPayBank(ret.get("payBank").toString());
+	                    result.getMsBean().setType(ret.get("type").toString());
+	                    result.getMsBean().setState(ret.get("state").toString());
+                	}
                 } else {
                 	result.setErrMsg(ret.get("result_msg").toString());
                 	result.setErrDetail(ret.get("err_detail").toString());
@@ -1067,19 +1070,20 @@ public class BCPay {
 
                 if (isSuccess) {
                 	result.setType(RESULT_TYPE.OK);
-                	for (Map<String, Object> map :  (List<Map<String, Object>>)ret.get("bills")){
-                		BCMSWebOrderBean bean = new BCMSWebOrderBean();
-                		bean.setAmountSum(map.get("amountSum").toString());
-                		bean.setPayOrderId(map.get("payOrderId").toString());
-                		bean.setMerOrderId(map.get("merOrderId").toString());
-                		bean.setMerSendTime(map.get("merSendTime").toString());
-                		bean.setPayBank(map.get("payBank").toString());
-                		bean.setType(map.get("type").toString());
-                		bean.setState(map.get("state").toString());
-                		result.getMsBeanList().add(bean);
-                	}
                 	result.setCount((Integer)ret.get("count"));
-                    
+                	if (result.getCount() != 0) {
+	                	for (Map<String, Object> map :  (List<Map<String, Object>>)ret.get("bills")){
+	                		BCMSWebOrderBean bean = new BCMSWebOrderBean();
+	                		bean.setAmountSum(map.get("amountSum").toString());
+	                		bean.setPayOrderId(map.get("payOrderId").toString());
+	                		bean.setMerOrderId(map.get("merOrderId").toString());
+	                		bean.setMerSendTime(map.get("merSendTime").toString());
+	                		bean.setPayBank(map.get("payBank").toString());
+	                		bean.setType(map.get("type").toString());
+	                		bean.setState(map.get("state").toString());
+	                		result.getMsBeanList().add(bean);
+	                	}
+                	}
                 } else {
                 	result.setErrMsg(ret.get("result_msg").toString());
                 	result.setErrDetail(ret.get("err_detail").toString());
@@ -1141,20 +1145,22 @@ public class BCPay {
 
                 if (isSuccess) {
                 	result.setType(RESULT_TYPE.OK);
-                	for (Map<String, Object> map :  (List<Map<String, Object>>)ret.get("refunds")){
-                		BCMSWebRefundBean bean = new BCMSWebRefundBean();
-                		bean.setAmount(map.get("amount").toString());
-                		bean.setApplyDate(map.get("applyDate").toString());
-                		bean.setStartFlag(map.get("startflag").toString());
-                		bean.setMerchantId(map.get("merchantId").toString());
-                		bean.setMerOrderId(map.get("merOrderId").toString());
-                		bean.setPayorderId(map.get("payorderId").toString());
-                		bean.setState(map.get("state").toString());
-                		bean.setRefundId(map.get("refundId").toString());
-                		bean.setRefundAmount(map.get("refundAmount").toString());
-                		result.getMsRefundBeanList().add(bean);
-                	}
                 	result.setCount((Integer)ret.get("count"));
+                	if (result.getCount() != 0) {
+	                	for (Map<String, Object> map :  (List<Map<String, Object>>)ret.get("refunds")){
+	                		BCMSWebRefundBean bean = new BCMSWebRefundBean();
+	                		bean.setAmount(map.get("amount").toString());
+	                		bean.setApplyDate(map.get("applyDate").toString());
+	                		bean.setStartFlag(map.get("startflag").toString());
+	                		bean.setMerchantId(map.get("merchantId").toString());
+	                		bean.setMerOrderId(map.get("merOrderId").toString());
+	                		bean.setPayorderId(map.get("payorderId").toString());
+	                		bean.setState(map.get("state").toString());
+	                		bean.setRefundId(map.get("refundId").toString());
+	                		bean.setRefundAmount(map.get("refundAmount").toString());
+	                		result.getMsRefundBeanList().add(bean);
+	                	}
+                	}
                     
                 } else {
                 	result.setErrMsg(ret.get("result_msg").toString());

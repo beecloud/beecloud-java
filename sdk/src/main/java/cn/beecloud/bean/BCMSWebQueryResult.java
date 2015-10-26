@@ -19,7 +19,7 @@ public class BCMSWebQueryResult {
 	
 	private Integer count;
 	
-	private BCMSWebOrderBean msBean = new BCMSWebOrderBean();
+	private BCMSWebOrderBean msBean;
 	
 	private List<BCMSWebOrderBean> msBeanList = new LinkedList<BCMSWebOrderBean>();
 

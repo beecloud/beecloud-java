@@ -259,7 +259,11 @@
 				out.println(bcQueryResult.getErrDetail());
 			}
 		} else if (querytype.equals("msWebQuery")) {
-			BCMSWebQueryResult result = BCPay.startQueryMSWebRefund(new Date(), new Date());
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.MONTH, -1);
+			Date d0 = cal.getTime();
+			Date d = cal.getTime();
+			BCMSWebQueryResult result = BCPay.startQueryMSWebRefund(d0, new Date());
 			if (result.getType().ordinal() == 0) {
 				pageContext.setAttribute("msRefundList", result.getMsRefundBeanList());
 				pageContext.setAttribute("count", result.getCount());
@@ -461,7 +465,7 @@
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.MONTH, -1);
 			Date startDate = cal.getTime();
-			BCMSWebQueryResult result = BCPay.startQueryMSWebBill(null, startDate, new Date());
+			BCMSWebQueryResult result = BCPay.startQueryMSWebBill(null, startDate,new Date());
 			if (result.getType().ordinal() == 0) {
 				pageContext.setAttribute("msWebBills", result.getMsBeanList());
 				pageContext.setAttribute("count", result.getCount());
@@ -469,24 +473,7 @@
 				out.println(result.getErrMsg());
 				out.println(result.getErrDetail());
 			}
-			
-		} else if (querytype.equals("msWebQueryById")) {
-			BCMSWebQueryResult result = BCPay.startQueryMSWebBillById("117220151020102731");
-			if (result.getType().ordinal() == 0) {
-				pageContext.setAttribute("msBean", result.getMsBean());
-			} else {
-				out.println(result.getErrMsg());
-				out.println(result.getErrDetail());
-			}
-		} else if (querytype.equals("msWapQueryById")) {
-			BCMSWapQueryResult result = BCPay.startQueryMSWapBillById("QP201510231659258604");
-			if (result.getType().ordinal() == 0) {
-				pageContext.setAttribute("msWapBean", result);
-			} else {
-				out.println(result.getErrMsg());
-				out.println(result.getErrDetail());
-			}
-		}
+		} 
 	}
 %>
 <c:if test="${billSize != null and billSize !=0}">
@@ -534,24 +521,6 @@
 			</tr>
 		</c:forEach> 
 		<tr><td colspan="20"><strong>符合条件记录总条数:</strong><font color="green">${count}</font></td></tr>
-	</table>
-</c:if>
-
-<!--网关单笔  -->
-<c:if test="${msBean != null}">
-	<table border="3" class="table"><tr><th>平台交易号</th><th>商户订单号</th><th>平台接受订单时间</th><th>金额</th><th>支付银行</th><th>状态</th><th>交易类型</th><th>发起退款</th></tr>
-			<tr><td>${msBean.payOrderId}</td><td>${msBean.merOrderId}</td><td>${msBean.merSendTime}</td><td>${msBean.amountSum}</td><td>${msBean.payBank}</td><td>${msBean.state}</td><td>${msBean.type}</td>
-				<td align="center" >
-					<input class="button" type="button" onclick="startMSWebRefund('${msBean.merOrderId}')" value="退款"/>
-				</td>
-			</tr>
-	</table>
-</c:if>
-
-<c:if test="${msWapBean != null}">
-	<table border="3" class="table"><tr><th>交易类型</th><th>交易状态</th><th>金额</th><th>商户交易时间</th><th>商户订单号</th>
-		<tr><td>${msWapBean.txnType}</td><td>${msWapBean.txnStat}</td><td>${msWapBean.amount}</td><td>${msWapBean.merTransTime}</td><td>${msWapBean.merOrderId}</td>
-		</tr>
 	</table>
 </c:if>
 
