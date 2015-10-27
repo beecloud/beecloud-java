@@ -21,9 +21,9 @@
 	<%
 		String state = request.getParameter("state");
 		if (state.equals("1")) {
-			out.println("<h3>明生电商网关支付成功，商户应自行实现成功逻辑！</h3>");
+			out.println("<h3>民生电商网关支付成功，商户应自行实现成功逻辑！</h3>");
 		} else {
-			out.println("<h3>明生电商网关支付未收到同步通知，商户应自行实现逻辑！</h3>");
+			out.println("<h3>民生电商网关支付未收到同步通知，商户应自行实现逻辑！</h3>");
 		}
 	%>
 </body>
