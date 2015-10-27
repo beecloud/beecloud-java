@@ -52,7 +52,7 @@
 		String aliReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/aliReturnUrl.jsp";
 		String unReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/unReturnUrl.jsp";
 		String bdReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/bdReturnUrl.jsp";
-		String msReturnUrl = "http://localhost:8080/PC-Web-Pay-Demo/msReturnUrl.jsp";
+		String msReturnUrl = "http://javademo.beecloud.cn:8080/demo/msReturnUrl.jsp";
 		
 		//微信 公众号id（读取配置文件conf.properties）及微信 redirec_uri
 		Properties prop = loadProperty();
@@ -365,7 +365,7 @@
 			String subject = "xxxxxx";
 			System.out.println("msBillNo:" + msBillNo);
 			BCMSWebPayParameter param = new BCMSWebPayParameter(PAY_CHANNEL.MS_WEB, 100, msBillNo, title, subject);
-			param.setReturnUrl("http://www.163.com");
+			param.setReturnUrl(msReturnUrl);
 			
 			bcPayResult = BCPay.startBCMSWebPay(param);
 			if (bcPayResult.getType().ordinal() == 0) {
