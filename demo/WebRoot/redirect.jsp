@@ -387,12 +387,12 @@
 			param.setCustId("0019860987654321234567890987");
 			param.setCustName("冯睿");
 			param.setCustIdType("0");
-			param.setCustIdNo("320503198306271012");
+			param.setCustIdNo("320503198406771912");
 			param.setBankNo("03080000");
 			param.setCardNo("5187187005718530");
 			param.setPhoneNo("13861331391");
 			param.setFlag("sign");
-			param.setExpiredDate("1119");
+			param.setExpiredDate("0919");
 			param.setCvv2("250");
 			
 			
