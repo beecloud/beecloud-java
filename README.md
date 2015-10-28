@@ -370,20 +370,24 @@ return | BCPayResult, 根据type决定返回内容
 ```java
 public BCRefundParameter(String billNo, String refundNo, Integer refundFee)
 ```
-发起退款将得到BCPayResult对象。BCPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCPayResult的type类型字符串为OK, 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。。
+发起退款将得到BCPayResult对象。BCPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCPayResult的type类型字符串为OK, 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。如果是ALI退款，则需要调用getUrl()方法并跳转至该url，输入支付密码完成退款。
 
 ```java
 BCRefundParameter param = new BCRefundParameter(billNo, refundNo, 1);
 param.setOptional(optional);
 
-BCPayResult result = BCPay.startBCRefund(param);
-if (bcPayResult.getType().ordinal() == 0) {
-    //返回"退款成功！" 
-	out.println(bcPayResult.getSucessMsg());
+if (result.getType().ordinal() == 0) {
+    if (result.getUrl() != null) {
+        //阿里退款，跳转至退款url并输入支付密码完成退款
+        response.sendRedirect(result.getUrl());
+    } else {
+        //其他渠道退款，返回"退款成功！" 
+        out.println(result.getSucessMsg());
+    }
 } else {
-	//handle the error message as you wish！
-	out.println(bcPayResult.getResult());
-	out.println(bcPayResult.getErrDetail());
+    //handle the error message as you wish！
+    out.println(result.getErrMsg());
+    out.println(result.getErrDetail());
 }
 ```
 
@@ -428,7 +432,7 @@ if (bcQueryResult.getType().ordinal() == 0) {
 key | 说明
 ---- | -----
 channel | 渠道类型， 根据不同场景选择不同的支付方式，包含：<br>WX<br>WX_APP 微信手机APP支付<br>WX_NATIVE 微信公众号二维码支付<br>WX_JSAPI 微信公众号支付<br>ALI<br>ALI_APP 支付宝APP支付<br>ALI_WEB 支付宝网页支付<br>ALI_QRCODE<br>ALI_WAP 支付宝移动网页支付 支付宝内嵌二维码支付<br>UN<br>UN_APP 银联APP支付<br>UN_WEB 银联网页支付<br>KUAIQIAN<br>KUAIQIAN_WEB 快钱网页支付<br>KUAIQIAN_WAP 快钱移动网页支付<br>YEE<br>YEE_WEB 易宝网页支付<br>YEE_WAP 易宝移动网页支付<br>YEE_NOBANKCARD 易宝点卡支付<br>JD<br>JD_WEB 京东网页支付<br>JD_WAP 京东移动网页支付<br>PAYPAL<br>PAYPAL_SANDBOX<br>PAYPAL_LIVE<br>BD<br>BD_WEB 百度网页支付<br>BD_APP 百度APP支付<br>BD_WAP 百度移动网页支付,（选填）
-billNo | 商户订单号，
+billNo | 商户订单号，String类型，（选填）
 startTime | 起始时间， Date类型，（选填）  
 endTime | 结束时间， Date类型， （选填）  
 skip   |  查询起始位置	 默认为0。设置为10，表示忽略满足条件的前10条数据	, （选填）
