@@ -626,7 +626,7 @@ else {
 
 此接口返回BCMSWapPayResult对象，BCMSWapPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWapPayResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
 
-正确状态调用getChannelTradeNo()方法，getChannelTradeNo()方法返回渠道订单号,用来作为发起快捷单笔订单查询的输入参数。
+正确状态调用getMerTransDate()方法，getMerTransDate()方法返回商户交易时间,用来作为发起快捷单笔订单查询的输入参数。
 
 ```java
 BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, subject);
@@ -705,7 +705,7 @@ billNo | 商户订单号，8到30位数字和/或字母组合，请自行确保�
 正确状态获取BCMSWapQueryResult的各个属性。
 
 ```java
-BCMSWapQueryResult result = BCPay.startQueryMSWapBillById(channelTradeNo);
+BCMSWapQueryResult result = BCPay.startQueryMSWapBillById(billNo, merTransDate);
 if (result.getType().ordinal() == 0) {
 	out.println(result.getTxnType());
 	out.println(result.getTxnStat());
@@ -721,7 +721,10 @@ if (result.getType().ordinal() == 0) {
 
 key | 说明
 ---- | -----
-channelTradeNo | 渠道交易号，即由快捷支付时返回的channelTradeNo，（必填）
+billNo | 商户订单号，**<mark>8到30位数字和/或字母组合</mark>**，即快捷支付时传入的billNo（必填）
+merTransDate | 商户交易时间，商户端交易日期，YYYYMMDDHHMMSS格式，即由快捷支付时返回的merTransDate，（必填）
+
+
 
 ### <a name="msWebQueryBatch">网关批量订单查询</a>
 
