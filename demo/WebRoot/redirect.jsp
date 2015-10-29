@@ -412,7 +412,7 @@
 				if (msResult.getType().ordinal() == 0) {
 					out.println(msResult.getObjectId());
 					out.println(msResult.getSucessMsg());
-					out.println("channelTradeNo:" + msResult.getChannelTradeNo());
+					out.println("merTransDate:" + msResult.getMerTransDate());
 				} else {
 					//handle the error message as you wish！
 					out.println(msResult.getErrMsg());

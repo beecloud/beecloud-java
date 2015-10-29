@@ -2,23 +2,52 @@ package cn.beecloud;
 
 
 
+import static junit.framework.Assert.assertEquals;
+
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import cn.beecloud.BCEumeration.PAY_CHANNEL;
 import cn.beecloud.BCEumeration.QR_PAY_MODE;
-import cn.beecloud.bean.*;;
+import cn.beecloud.BCEumeration.RESULT_TYPE;
+import cn.beecloud.bean.*;
 
 public class BCPayTest {
-
+	
+	protected Client client;
+	private String billNo;
+	private String subject;
+	private String refundNo;
+	private String batchNo;
+	private String transferId1;
+	private String transferId2;
+	private Map<String, Object> payOptional = new HashMap<String, Object>();
+	private Map<String, Object> refundOptional = new HashMap<String, Object>();
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		
 	}  
 
 	@Before
@@ -26,38 +55,6 @@ public class BCPayTest {
 		BeeCloud.registerApp(TestConstant.KTestAppID, TestConstant.kTestAppSecret);
 	}
 
-	@Test
-	public void testPay() {  
-		BCPayParameter param = new BCPayParameter(PAY_CHANNEL.WX_JSAPI, 1, "201508130100010000005647", "气费");
-		Map map = new HashMap();
-		map.put("opchannel", "10010");
-		param.setReturnUrl("http://118.186.253.55:8889/V04/99bill.html");
-		param.setQrPayMode(QR_PAY_MODE.MODE_FRONT);
-		param.setOptional(map);
-		
-		BCPayResult result = BCPay.startBCPay(param);
-		System.out.println("test");
-	}
-	
-	@Test
-	public void testRefund() {
-		
-		BCRefundParameter param = new BCRefundParameter("1516e2ce5b8f4d599dcb13fd2d9b0eaa", "201509240000", 1);
-		param.setChannel(PAY_CHANNEL.ALI);
-		
-		BCPayResult result = BCPay.startBCRefund(param);
-		System.out.println("test1");
-	
-	}
-	
-	@Test
-	public void testQueryBill() {
-		BCQueryParameter param = new BCQueryParameter();
-		param.setChannel(PAY_CHANNEL.PAYPAL);
-		
-		BCQueryResult bcQueryResult = BCPay.startQueryBill(param);
-		System.out.println("test1");
-	}
 	
 	@Test
 	public void testQueryRefund() {
@@ -98,4 +95,5 @@ public class BCPayTest {
 		System.out.println(result.getRefund());
 		System.out.println("test refund by id!" + result);
 	}
+	
 }

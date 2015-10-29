@@ -26,7 +26,7 @@
 	String msWapQueryById = request.getParameter("msWapQueryById");
 	
 	if (msWebQueryById != null) {
-		String billNo = request.getParameter("billNo");
+		String billNo = request.getParameter("billNoWeb");
 		if (billNo.equals("")) {
 			out.println("请输入订单号!");
 			return;
@@ -39,12 +39,13 @@
 			out.println(result.getErrDetail());
 		}
 	} else if (msWapQueryById != null) {
-		String channelTradeNo = request.getParameter("billNo");
-		if (channelTradeNo.equals("")) {
-			out.println("请输入渠道交易号!");
+		String billNoWap = request.getParameter("billNoWap");
+		String merTransDate = request.getParameter("merTransDate");
+		if (billNoWap.equals("") || merTransDate.equals("")) {
+			out.println("请输入订单号或商户交易时间!");
 			return;
 		}
-		BCMSWapQueryResult result = BCPay.startQueryMSWapBillById(channelTradeNo);
+		BCMSWapQueryResult result = BCPay.startQueryMSWapBillById(billNoWap, merTransDate);
 		if (result.getType().ordinal() == 0) {
 			pageContext.setAttribute("msWapBean", result);
 		} else {

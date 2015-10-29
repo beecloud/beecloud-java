@@ -9,7 +9,7 @@ public class BCMSWapPayResult extends BCPayResult{
 	
 	private String phoneToken;
 	
-	private String channelTradeNo;
+	private String merTransDate;
 	
 	public String getPhoneToken() {
 		return phoneToken;
@@ -19,11 +19,11 @@ public class BCMSWapPayResult extends BCPayResult{
 		this.phoneToken = phoneToken;
 	}
 
-	public String getChannelTradeNo() {
-		return channelTradeNo;
+	public String getMerTransDate() {
+		return merTransDate;
 	}
 
-	public void setChannelTradeNo(String channelTradeNo) {
-		this.channelTradeNo = channelTradeNo;
+	public void setMerTransDate(String merTransDate) {
+		this.merTransDate = merTransDate;
 	}
 }

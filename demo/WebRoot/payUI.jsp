@@ -124,7 +124,7 @@ input {
 </head>
 <body>
 <%
-	BeeCloud.registerApp("c5d1cba1-5e3f-4ba0-941d-9b0a371fe719", "39a7a518-9ac8-4a9e-87bc-7885f33cf18c");
+	BeeCloud.registerApp("c37d661d-7e61-49ea-96a5-68c34e83db3b", "c37d661d-7e61-49ea-96a5-68c34e83db3b");
 %>
 	<div>
 		<h2>应付总额： ¥0.01</h2>
@@ -273,13 +273,21 @@ input {
 	</form>
 	
 	<hr/>
-		<h2>根据订单号（网关）、渠道交易号（快捷）查询民生电商订单记录</h2>
-		<p>请输入订单号或者渠道交易号:</p>
+		<h2>根据订单号（网关）、商户交易时间（快捷）查询民生电商订单记录</h2>
 		<form action="msQueryById.jsp" method="POST" target="_blank">
-			<input type="text" name="billNo" style="display:block;width:300px;height:25px"> 
+			<p>请输入订单号</p>
+			<input type="text" name="billNoWeb" style="display:block;width:300px;height:25px"> 
 			<div style="clear: both;">
 				<input name="msWebQueryById" type="submit" class="button" value="网关订单单笔查询">
-				<input name="msWapQueryById" type="submit" class="button" value="快捷订单单笔查询">
+			</div>
+			<p>请输入订单号和商户交易时间（商户交易时间由快捷支付返回）</p>
+			订单号:
+			<input type="text" name="billNoWap" style="display:block;width:300px;height:25px"> 
+			<br/>
+			商户交易时间:
+			<input type="text" name="merTransDate" style="display:block;width:300px;height:25px"> 
+			<div>
+			<input name="msWapQueryById" type="submit" class="button" value="快捷订单单笔查询">
 			</div>
 		</form>
 	

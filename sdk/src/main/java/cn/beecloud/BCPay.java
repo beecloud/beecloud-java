@@ -791,7 +791,7 @@ public class BCPay {
                 		result.setPhoneToken(ret.get("phoneToken").toString());
                 	} else {
                 		result.setObjectId(ret.get("id").toString());
-                		result.setChannelTradeNo(ret.get("refNo").toString());
+                		result.setMerTransDate(ret.get("client_date").toString());
                 		result.setSucessMsg("交易成功！");
                 	}
                 	result.setType(RESULT_TYPE.OK);
@@ -876,7 +876,7 @@ public class BCPay {
      * （必填）
      * @return BCMSWapQueryResult
      */
-    public static BCMSWapQueryResult startQueryMSWapBillById(String channelTradeNo) {
+    public static BCMSWapQueryResult startQueryMSWapBillById(String billNo, String merTransDate) {
     	
     	 BCMSWapQueryResult result;
     	
@@ -884,7 +884,8 @@ public class BCPay {
 	     param.put("app_id", BCCache.getAppID());
 	     param.put("timestamp", System.currentTimeMillis());
 	     param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
-         param.put("channel_trade_no", channelTradeNo);
+         param.put("bill_no", billNo);
+         param.put("mer_trans_date", merTransDate);
          
          result = new BCMSWapQueryResult();
     	
