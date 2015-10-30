@@ -786,12 +786,14 @@ public class BCPay {
 
                 boolean isSuccess = (ret.containsKey("result_code") && StrUtil
                                 .toStr(ret.get("result_code")).equals("0"));
+                if (ret.containsKey("client_date")) {
+                	result.setMerTransDate(ret.get("client_date").toString());
+                }
                 if (isSuccess) {
             		if (ret.containsKey("phoneToken")) {
                 		result.setPhoneToken(ret.get("phoneToken").toString());
                 	} else {
                 		result.setObjectId(ret.get("id").toString());
-                		result.setMerTransDate(ret.get("client_date").toString());
                 		result.setSucessMsg("交易成功！");
                 	}
                 	result.setType(RESULT_TYPE.OK);

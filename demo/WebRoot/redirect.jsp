@@ -417,6 +417,7 @@
 					//handle the error message as you wish！
 					out.println(msResult.getErrMsg());
 					out.println(msResult.getErrDetail());
+					out.println("merTransDate:" + msResult.getMerTransDate());
 				}
 			}
 			else {
