@@ -47,6 +47,16 @@ public class BCEumeration {
 		MODE_FRONT,
 		MODE_MINI_FRONT
 	}
+	
+	public enum MS_WAP_TYPE {
+		CARD,
+		SAVED_CARD
+	}
+	
+	public enum CARD_TYPE {
+		DIRECT,
+		CREDICT
+	}
 }
 
 

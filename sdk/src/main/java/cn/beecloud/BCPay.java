@@ -23,6 +23,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cn.beecloud.BCEumeration.CARD_TYPE;
+import cn.beecloud.BCEumeration.MS_WAP_TYPE;
 import cn.beecloud.BCEumeration.PAY_CHANNEL;
 import cn.beecloud.BCEumeration.RESULT_TYPE;
 import cn.beecloud.bean.BCMSRefundResult;
@@ -68,7 +70,7 @@ public class BCPay {
         
         buildPayParam(param, para);
         result = new BCPayResult();
-        
+          
         PAY_CHANNEL channel = para.getChannel();
         Client client = BCAPIClient.client;
         WebTarget target = client.target(BCUtilPrivate.getkApiPay());
@@ -740,42 +742,106 @@ public class BCPay {
         return result;
     }
     
+//    /**
+//     * 发起明生快捷支付或鉴权
+//	 * @param para {@link BCMSWapPayParameter}支付参数
+//	 * (必填)
+//	 * @return 调起明生电商快捷：获取令牌或者发起支付
+//	 */
+//    public static BCMSWapPayResult startBCMSWapPay(BCMSWapPayParameter para) {
+//    	
+//    	BCMSWapPayResult result;
+//    	
+//        Map<String, Object> param = new HashMap<String, Object>();
+//        
+//        buildMSWapPayParam(param, para);
+//        
+//        param.put("cust_id", para.getCustId());
+//    	param.put("card_no", para.getCardNo());
+//    	param.put("cust_name", para.getCustName());
+//    	param.put("cust_id_no", para.getCustIdNo());
+//    	param.put("cust_id_type", para.getCustIdType());
+//    	param.put("bank_no", para.getBankNo());
+//    	param.put("phone_no", para.getPhoneNo());
+//    	if (para.getExpiredDate() != null) {
+//    		param.put("expired_date", para.getExpiredDate());
+//    	}
+//    	if (para.getCvv2() != null) {
+//    		param.put("cvv2", para.getCvv2());
+//    	}
+//    	if (para.getPhoneToken() != null) {
+//    		param.put("phone_token", para.getPhoneToken());
+//    	}
+//    	if (para.getPhoneVerCode() != null) {
+//    		param.put("phone_ver_code", para.getPhoneVerCode());
+//    	}
+//    	param.put("flag", para.getFlag());
+//    
+//        result = new BCMSWapPayResult();
+//        
+//        Client client = BCAPIClient.client;
+//        WebTarget target = client.target(BCUtilPrivate.getkApiMingShengPay());
+//        try {
+//            Response response = target.request().post(Entity.entity(param, MediaType.APPLICATION_JSON));
+//            if (response.getStatus() == 200) {
+//                Map<String, Object> ret = response.readEntity(Map.class);
+//
+//                boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+//                                .toStr(ret.get("result_code")).equals("0"));
+//                if (ret.containsKey("client_date")) {
+//                	result.setMerTransDate(ret.get("client_date").toString());
+//                }
+//                if (isSuccess) {
+//            		if (ret.containsKey("phoneToken")) {
+//                		result.setPhoneToken(ret.get("phoneToken").toString());
+//                	} else {
+//                		result.setObjectId(ret.get("id").toString());
+//                		result.setSucessMsg("交易成功！");
+//                	}
+//                	result.setType(RESULT_TYPE.OK);
+//                } else {
+//                	result.setErrMsg(ret.get("result_msg").toString());
+//                	result.setErrDetail(ret.get("err_detail").toString());
+//                	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+//                }
+//            } else {
+//            	result.setErrMsg("Not correct response!");
+//            	result.setErrDetail("Not correct response!");
+//            	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+//            }
+//        } catch (Exception e) {
+//        	result.setErrMsg("Network error!");
+//        	result.setErrDetail(e.getMessage());
+//        	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+//        }
+//        return result;
+//    }
+    
+    
+
     /**
      * 发起明生快捷支付或鉴权
-	 * @param para {@link BCMSWapPayParameter}支付参数
+	 * @param para {@link BCMSWapBill}支付参数
 	 * (必填)
 	 * @return 调起明生电商快捷：获取令牌或者发起支付
 	 */
-    public static BCMSWapPayResult startBCMSWapPay(BCMSWapPayParameter para) {
+    public static BCMSWapPayResult startBCMSWapAuth(BCMSWapBill para) {
     	
     	BCMSWapPayResult result;
     	
         Map<String, Object> param = new HashMap<String, Object>();
         
-        buildMSWapPayParam(param, para);
+        result = ValidationUtil.validateMSAuth(para);
+    	
+    	if (result.getType().ordinal()!=0) {
+    		return result;
+    	}
         
-        param.put("cust_id", para.getCustId());
-    	param.put("card_no", para.getCardNo());
-    	param.put("cust_name", para.getCustName());
-    	param.put("cust_id_no", para.getCustIdNo());
-    	param.put("cust_id_type", para.getCustIdType());
-    	param.put("bank_no", para.getBankNo());
-    	param.put("phone_no", para.getPhoneNo());
-    	if (para.getExpiredDate() != null) {
-    		param.put("expired_date", para.getExpiredDate());
-    	}
-    	if (para.getCvv2() != null) {
-    		param.put("cvv2", para.getCvv2());
-    	}
-    	if (para.getPhoneToken() != null) {
-    		param.put("phone_token", para.getPhoneToken());
-    	}
-    	if (para.getPhoneVerCode() != null) {
-    		param.put("phone_ver_code", para.getPhoneVerCode());
-    	}
-    	param.put("flag", para.getFlag());
-    
+    	buildMSWapAuth(param, para);
+    	
         result = new BCMSWapPayResult();
+        
+        result.setWapBill(para);
         
         Client client = BCAPIClient.client;
         WebTarget target = client.target(BCUtilPrivate.getkApiMingShengPay());
@@ -786,16 +852,10 @@ public class BCPay {
 
                 boolean isSuccess = (ret.containsKey("result_code") && StrUtil
                                 .toStr(ret.get("result_code")).equals("0"));
-                if (ret.containsKey("client_date")) {
-                	result.setMerTransDate(ret.get("client_date").toString());
-                }
                 if (isSuccess) {
             		if (ret.containsKey("phoneToken")) {
-                		result.setPhoneToken(ret.get("phoneToken").toString());
-                	} else {
-                		result.setObjectId(ret.get("id").toString());
-                		result.setSucessMsg("交易成功！");
-                	}
+                		result.setToken(ret.get("phoneToken").toString());
+                	} 
                 	result.setType(RESULT_TYPE.OK);
                 } else {
                 	result.setErrMsg(ret.get("result_msg").toString());
@@ -816,6 +876,66 @@ public class BCPay {
     }
     
     /**
+     * 发起明生快捷支付
+	 * @param para {@link BCMSWapBill}支付参数
+	 * (必填)
+	 * @return 调起明生电商快捷支付
+	 */
+    public static BCMSWapPayResult startBCMSWapPay(BCMSWapBill para) {
+    	
+    	BCMSWapPayResult result;
+    	
+        Map<String, Object> param = new HashMap<String, Object>();
+        
+        result = ValidationUtil.validateMSWapPay(para);
+    	
+    	if (result.getType().ordinal()!=0) {
+    		return result;
+    	}
+        
+    	buildMSWapPay(param, para);
+    	
+        result = new BCMSWapPayResult();
+        
+        result.setWapBill(para);
+        
+        Client client = BCAPIClient.client;
+        WebTarget target = client.target(BCUtilPrivate.getkApiMingShengPay());
+        try {
+            Response response = target.request().post(Entity.entity(param, MediaType.APPLICATION_JSON));
+            if (response.getStatus() == 200) {
+                Map<String, Object> ret = response.readEntity(Map.class);
+
+                boolean isSuccess = (ret.containsKey("result_code") && StrUtil
+                                .toStr(ret.get("result_code")).equals("0"));
+                if (ret.containsKey("client_date")) {
+                	result.setMerTransDate(ret.get("client_date").toString());
+                }
+                if (isSuccess) {
+            		result.setSucessMsg("支付发起成功！");
+            		result.setType(RESULT_TYPE.OK);
+            		result.setObjectId(ret.get("id").toString());
+            		result.setRefNo(ret.get("refNo").toString());
+                } else {
+                	result.setErrMsg(ret.get("result_msg").toString());
+                	result.setErrDetail(ret.get("err_detail").toString());
+                	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+                }
+            } else {
+            	result.setErrMsg("Not correct response!");
+            	result.setErrDetail("Not correct response!");
+            	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+            }
+        } catch (Exception e) {
+        	result.setErrMsg("Network error!");
+        	result.setErrDetail(e.getMessage());
+        	result.setType(RESULT_TYPE.RUNTIME_ERROR);
+        }
+        return result;
+    }
+
+
+	/**
      * 发起明生网关退款
 	 * @param billNo 商户订单号, 8到30位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复	
 	 * （必填）
@@ -1534,8 +1654,8 @@ public class BCPay {
      * @param param to be built
      * @param para used for building 
      */
-    private static void buildMSWapPayParam(Map<String, Object> param,
-			BCMSWapPayParameter para) {
+    private static void buildMSWapAuth(Map<String, Object> param,
+			BCMSWapBill para) {
     	
     	param.put("app_id", BCCache.getAppID());
         param.put("timestamp", System.currentTimeMillis());
@@ -1544,9 +1664,77 @@ public class BCPay {
         param.put("total_fee", para.getTotalFee());
         param.put("bill_no", para.getBillNo());
         param.put("title", para.getTitle());
-		param.put("subject", para.getSubject());
+        param.put("phone_no", para.getPhoneNo());
+        param.put("bank_no", para.getBankNo());
+        param.put("cust_id", para.getCustId());
+        param.put("flag", "sign");
 		if (para.getOptional() != null && para.getOptional().size() > 0) {
 			param.put("optional", para.getOptional());
 		}
+		param.put("type", "saved_card");
+		
+		if (para.getType().equals(MS_WAP_TYPE.CARD)) {
+			param.put("type", "card");
+			Map<String, Object> cardInfo = new HashMap<String, Object>();
+			cardInfo.put("card_no", para.getCardInfo().getCardNo());
+			cardInfo.put("cust_name", para.getCardInfo().getCustName());
+			cardInfo.put("cust_id_no", para.getCardInfo().getCustIdNo());
+			cardInfo.put("cust_id_type", para.getCardInfo().getCustIdType());
+			cardInfo.put("card_type", "0");
+			if (para.getCardInfo().getCardType().equals(CARD_TYPE.CREDICT)) {
+				cardInfo.put("card_type", "1");
+				cardInfo.put("expired_date", para.getCardInfo().getExpiredDate());
+				cardInfo.put("cvv2", para.getCardInfo().getCvv2());
+			}
+			param.put("card_info", cardInfo);
+		}
 	}
+    
+    /**
+     * Build Payment parameters
+     * @param param to be built
+     * @param para used for building 
+     */
+    private static void buildMSWapPay(Map<String, Object> param,
+			BCMSWapBill para) {
+    	
+    	param.put("app_id", BCCache.getAppID());
+        param.put("timestamp", System.currentTimeMillis());
+        param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
+        param.put("channel", para.getChannel().toString());
+        param.put("total_fee", para.getTotalFee());
+        param.put("bill_no", para.getBillNo());
+        param.put("title", para.getTitle());
+        param.put("subject", para.getSubject());
+        param.put("phone_no", para.getPhoneNo());
+        param.put("bank_no", para.getBankNo());
+        param.put("cust_id", para.getCustId());
+        param.put("flag", "pay");
+		if (para.getOptional() != null && para.getOptional().size() > 0) {
+			param.put("optional", para.getOptional());
+		}
+		
+		param.put("phone_token", para.getToken());
+		param.put("phone_ver_code", para.getVerifyCode());
+		param.put("type", "saved_card");
+		
+		if (para.getType().equals(MS_WAP_TYPE.CARD)) {
+			param.put("type", "card");
+			Map<String, Object> cardInfo = new HashMap<String, Object>();
+			cardInfo.put("card_no", para.getCardInfo().getCardNo());
+			cardInfo.put("cust_name", para.getCardInfo().getCustName());
+			cardInfo.put("cust_id_no", para.getCardInfo().getCustIdNo());
+			cardInfo.put("cust_id_type", para.getCardInfo().getCustIdType());
+			cardInfo.put("card_type", "0");
+			if (para.getCardInfo().getCardType().equals(CARD_TYPE.CREDICT)) {
+				cardInfo.put("expired_date", para.getCardInfo().getExpiredDate());
+				cardInfo.put("cvv2", para.getCardInfo().getCvv2());
+				cardInfo.put("card_type", "1");
+			}
+			param.put("card_info", cardInfo);
+		}
+	}
+    
+    
+    
 }

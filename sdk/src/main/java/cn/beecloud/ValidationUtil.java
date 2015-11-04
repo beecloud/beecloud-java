@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import cn.beecloud.BCEumeration.CARD_TYPE;
+import cn.beecloud.BCEumeration.MS_WAP_TYPE;
 import cn.beecloud.BCEumeration.PAY_CHANNEL;
 import cn.beecloud.BCEumeration.RESULT_TYPE;
 import cn.beecloud.bean.BCPayParameter;
@@ -102,6 +104,27 @@ public class ValidationUtil
 	
 	private final static String CHANNEL_SUPPORT_INVALID =
 			"批量打款仅支持ALI";
+	
+	private final static String WAP_AUTH_PARAM_EMPTY = 
+			"快捷鉴权参数不能为空！";
+	
+	private final static String WAP_AUTH_CARD_INFO_EMPTY =
+			"快捷首次鉴权卡信息不能为空！";
+	
+	private final static String WAP_AUTH_CREDICT_FACTOR_EMPTY =
+			"快捷鉴权信用卡CVV2、失效时间必填！";
+	
+	private final static String WAP_PAY_PARAM_EMPTY =
+			"快捷支付参数不能为空！";
+	
+	private final static String WAP_PAY_SUBJECT_EMPTY = 
+			"快捷支付subject必填！";
+	
+	private final static String WAP_PAY_TOKEN_EMPTY = 
+			"快捷支付token必填！";
+	
+	private final static String WAP_PAY_VERIFY_CODE_EMPTY =
+			"快捷支付verfiyCode必填！";
 	
 	final static String PRE_REFUND_SUCCEED = "预退款成功！ ";
 	
@@ -315,5 +338,41 @@ public class ValidationUtil
 		}
 		
 		return new BCQueryResult(RESULT_TYPE.OK);
+	}
+
+	public static BCMSWapPayResult validateMSAuth(BCMSWapBill para) {
+		if (para == null) {
+			return new BCMSWapPayResult(WAP_AUTH_PARAM_EMPTY, RESULT_TYPE.VALIDATION_ERROR);
+		} else if (para.getType().equals(MS_WAP_TYPE.CARD)) {
+			if (para.getCardInfo() == null) {
+				return new BCMSWapPayResult(WAP_AUTH_CARD_INFO_EMPTY, RESULT_TYPE.VALIDATION_ERROR);
+			} else if(para.getCardInfo().getCardType().equals(CARD_TYPE.CREDICT)) {
+				if (para.getCardInfo().getCvv2() == null || para.getCardInfo().getExpiredDate() == null) {
+					return new BCMSWapPayResult(WAP_AUTH_CREDICT_FACTOR_EMPTY, RESULT_TYPE.VALIDATION_ERROR);
+				}
+			}
+		}
+		return new BCMSWapPayResult(RESULT_TYPE.OK);
+	}
+
+	public static BCMSWapPayResult validateMSWapPay(BCMSWapBill para) {
+		if (para == null) {
+			return new BCMSWapPayResult(WAP_PAY_PARAM_EMPTY, RESULT_TYPE.VALIDATION_ERROR);
+		} else if(para.getSubject() == null) {
+			return new BCMSWapPayResult(WAP_PAY_SUBJECT_EMPTY, RESULT_TYPE.VALIDATION_ERROR);
+		} else if(para.getToken() == null) {
+			return new BCMSWapPayResult(WAP_PAY_TOKEN_EMPTY, RESULT_TYPE.VALIDATION_ERROR);
+		} else if(para.getVerifyCode() == null) {
+			return new BCMSWapPayResult(WAP_PAY_VERIFY_CODE_EMPTY, RESULT_TYPE.VALIDATION_ERROR);
+		} else if (para.getType().equals(MS_WAP_TYPE.CARD)) {
+			if (para.getCardInfo() == null) {
+				return new BCMSWapPayResult(WAP_AUTH_CARD_INFO_EMPTY, RESULT_TYPE.VALIDATION_ERROR);
+			} else if(para.getCardInfo().getCardType().equals(CARD_TYPE.CREDICT)) {
+				if (para.getCardInfo().getCvv2() == null || para.getCardInfo().getExpiredDate() == null) {
+					return new BCMSWapPayResult(WAP_AUTH_CREDICT_FACTOR_EMPTY, RESULT_TYPE.VALIDATION_ERROR);
+				}
+			}
+		}
+		return new BCMSWapPayResult(RESULT_TYPE.OK);
 	}
 }

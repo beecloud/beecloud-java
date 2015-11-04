@@ -383,48 +383,86 @@
 			String msBillNo = billNo.substring(10);
 			String subject = "1172001";
 			System.out.println("msBillNo:" + msBillNo);
-			BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, subject);
-			param.setCustId("0019860987654321234567890987");
-			param.setCustName("冯睿");
-			param.setCustIdType("0");
-			param.setCustIdNo("320503198306271012");
+			BCMSWapBill param = new BCMSWapBill(msBillNo, 100, "test", PAY_CHANNEL.MS_WAP, null);
+			param.setCustId("001986098765432123456");
+			param.setType(MS_WAP_TYPE.CARD);
 			param.setBankNo("03080000");
-			param.setCardNo("5187187005718530");
 			param.setPhoneNo("13861331391");
 			param.setFlag("sign");
-			param.setExpiredDate("0919");
-			param.setCvv2("250");
+			
+			param.getCardInfo().setCardNo("5187187005718530");
+			param.getCardInfo().setCustName("冯睿");
+			param.getCardInfo().setCustIdType("0");
+			param.getCardInfo().setCustIdNo("320503198306271012");
+			param.getCardInfo().setCardType(CARD_TYPE.CREDICT);
+			param.getCardInfo().setExpiredDate("0919");
+			param.getCardInfo().setCvv2("250");
 			
 			
-			bcPayResult = BCPay.startBCMSWapPay(param);
-			if (bcPayResult.getType().ordinal() == 0) {
+			
+			
+			System.out.println(param.getTotalFee());;
+			BCMSWapPayResult result = BCPay.startBCMSWapAuth(param);
+			if (result.getType().ordinal() == 0) {
+				result.getWapBill().setVerifyCode(param.getToken());
+				result.getWapBill().setFlag("pay");
+				result.getWapBill().setSubject(subject);
 				
-			BCMSWapPayResult msResult = (BCMSWapPayResult)bcPayResult;
-			String phoneToken = msResult.getPhoneToken();
-			System.out.println("phoneToken" + phoneToken);
-				out.println(phoneToken);
-				Thread.sleep(5000);
-				param.setPhoneToken(phoneToken);
-				param.setPhoneVerCode(phoneToken);
-				param.setFlag("pay");
 				
-				msResult = BCPay.startBCMSWapPay(param);
-				if (msResult.getType().ordinal() == 0) {
-					out.println(msResult.getObjectId());
-					out.println(msResult.getSucessMsg());
-					out.println("merTransDate:" + msResult.getMerTransDate());
+				result = BCPay.startBCMSWapPay(result.getWapBill());
+				if (result.getType().ordinal() == 0) {
+					out.println(result.getObjectId());
+					out.println(result.getRefNo());
+					out.println("merTransDate:" + result.getMerTransDate());
 				} else {
 					//handle the error message as you wish！
-					out.println(msResult.getErrMsg());
-					out.println(msResult.getErrDetail());
-					out.println("merTransDate:" + msResult.getMerTransDate());
+					out.println(result.getErrMsg());
+					out.println(result.getErrDetail());
+					out.println("merTransDate:" + result.getMerTransDate());
 				}
 			}
 			else {
 				//handle the error message as you wish！
-				out.println(bcPayResult.getErrMsg());
-				out.println(bcPayResult.getErrDetail());
+				out.println(result.getErrMsg());
+				out.println(result.getErrDetail());
 			}
+			bcPayResult = new BCPayResult(RESULT_TYPE.OK);
+		} else if (type.equals("msWap2")) {
+			String msBillNo = billNo.substring(10);
+			String subject = "1172001";
+			System.out.println("msBillNo:" + msBillNo);
+			BCMSWapBill param = new BCMSWapBill(msBillNo, 100, "test", PAY_CHANNEL.MS_WAP, null);
+			param.setCustId("001986098765432123456");
+			param.setType(MS_WAP_TYPE.SAVED_CARD);
+			param.setBankNo("03080000");
+			param.setPhoneNo("13861331391");
+			param.setFlag("sign");
+			
+			BCMSWapPayResult result = BCPay.startBCMSWapAuth(param);
+			if (result.getType().ordinal() == 0) {
+				System.out.println("phone token:" + result.getWapBill().getToken());
+				result.getWapBill().setVerifyCode(param.getToken());
+				result.getWapBill().setFlag("pay");
+				result.getWapBill().setSubject(subject);
+				
+				result = BCPay.startBCMSWapPay(result.getWapBill());
+				if (result.getType().ordinal() == 0) {
+					out.println(result.getObjectId());
+					out.println(result.getRefNo());
+					out.println("merTransDate:" + result.getMerTransDate());
+				} else {
+					//handle the error message as you wish！
+					out.println(result.getErrMsg());
+					out.println(result.getErrDetail());
+					out.println("merTransDate:" + result.getMerTransDate());
+				}
+			}
+			else {
+				//handle the error message as you wish！
+				out.println(result.getErrMsg());
+				out.println(result.getErrDetail());
+			}
+			bcPayResult = new BCPayResult(RESULT_TYPE.OK);
 		}
 	%>
 <div align="center" id="qrcode">

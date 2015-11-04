@@ -1,5 +1,7 @@
 package cn.beecloud;
 
+import cn.beecloud.BCEumeration.RESULT_TYPE;
+
 
 /**
  * @author Ray
@@ -7,16 +9,40 @@ package cn.beecloud;
  */
 public class BCMSWapPayResult extends BCPayResult{
 	
-	private String phoneToken;
+	private String objectId;
+	
+	private String refNo;
+	
+	private BCMSWapBill wapBill;
 	
 	private String merTransDate;
-	
-	public String getPhoneToken() {
-		return phoneToken;
+
+	public BCMSWapBill getWapBill() {
+		return wapBill;
 	}
 
-	public void setPhoneToken(String phoneToken) {
-		this.phoneToken = phoneToken;
+	public void setWapBill(BCMSWapBill wapBill) {
+		this.wapBill = wapBill;
+	}
+	
+	public void setToken(String token) {
+		this.wapBill.setToken(token);
+	}
+	
+	public void setVerifyCode(String verifyCode) {
+		this.wapBill.setVerifyCode(verifyCode);
+	}
+	
+	public BCMSWapPayResult(String errMsg, RESULT_TYPE type) {
+		super.setType(type);
+		super.setErrMsg(errMsg);
+	}
+
+	public BCMSWapPayResult(RESULT_TYPE type) {
+		super.setType(type);
+	}
+
+	public BCMSWapPayResult() {
 	}
 
 	public String getMerTransDate() {
@@ -25,5 +51,21 @@ public class BCMSWapPayResult extends BCPayResult{
 
 	public void setMerTransDate(String merTransDate) {
 		this.merTransDate = merTransDate;
+	}
+
+	public String getObjectId() {
+		return objectId;
+	}
+
+	public void setObjectId(String objectId) {
+		this.objectId = objectId;
+	}
+
+	public String getRefNo() {
+		return refNo;
+	}
+
+	public void setRefNo(String refNo) {
+		this.refNo = refNo;
 	}
 }

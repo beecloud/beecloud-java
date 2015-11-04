@@ -208,6 +208,10 @@ input {
 					<input type="radio"  value="msWap" name="paytype">
 					<img src="./images/msWap.png" alt="MINGSHENG_WAP"/>
 				</li>
+				<li onclick="paySwitch(this)">
+					<input type="radio"  value="msWap2" name="paytype">
+					<img src="./images/msWap1.png" alt="快捷二次"/>
+				</li>
   		    </ul>
 		</div>
 		<div style="clear: both;">

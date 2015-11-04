@@ -587,74 +587,86 @@ returnUrl | 同步返回页面，支付渠道处理完请求后,当前页面自�
 
 ### <a name="msWapSign">快捷鉴权</a>
 
-快捷鉴权接口接收BCMSWapPayParameter参数对象，该对象封装了发起快捷鉴权及支付所需的各个具体参数。
+快捷鉴权接口接收BCMSWapBill参数对象，该对象封装了发起快捷鉴权所需的各个具体参数。
 
-发起快捷鉴权需要指定BCMSWapPayParameter对象的flag属性值为"sign"。
+发起快捷鉴权需要指定BCMSWapBill对象的flag属性值为"sign"。
 
 此接口返回BCMSWapPayResult对象，BCMSWapPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWapPayResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
 
-正确状态调用getPhoneToken()方法，getPhoneToken()方法返回鉴权令牌,用来作为发起快捷支付的输入参数。
+正确状态调用BCMSWapPayResult对象的getWapBill().getToken()方法，查看鉴权接口返回的鉴权令牌,用来作为发起快捷支付的输入参数。
 
+如果是首次鉴权，需设置type为有卡鉴权，即param.setType(MS_WAP_TYPE.CARD);有卡鉴权需要设置卡信息;若卡是信用卡，则
+需设置cvv2和expiredDate,即param.getCardInfo().setExpiredDate(expiredDate);param.getCardInfo().setCvv2(cvv2)。
+
+如果是再次鉴权，则需设置type为无卡鉴权，即param.setType(MS_WAP_TYPE.SAVED_CARD);无卡鉴权不需要设置卡信息。
+
+注意：一个custId对应一张卡信息。鉴权或支付时每次传入的custId,务必唯一对应一张卡信息。
 ```java
-BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, subject);
-param.setCustId(custId);
-param.setCustName(custName);
-param.setCustIdType("0");
-param.setCustIdNo(custIdNo);
-param.setBankNo(bankNo);
-param.setCardNo(cardNo);
-param.setPhoneNo(phoneNo);
-param.setFlag("sign");//此处固定为"sign"
+BCMSWapBill param = new BCMSWapBill(msBillNo, 100, "test", PAY_CHANNEL.MS_WAP, null);
+param.setCustId("001986098765432123");
+param.setBankNo("03080000");
+param.setPhoneNo("13861331391");
+param.setFlag("sign");
+/*无卡鉴权开始*/
+param.setType(MS_WAP_TYPE.SAVED_CARD);
+/*无卡鉴权结束*/
+/*----------------或者------------------*/
+/*有卡鉴权开始*/
+param.setType(MS_WAP_TYPE.CARD);
+param.getCardInfo().setCardNo(cardNo);
+param.getCardInfo().setCustName(custName);
+param.getCardInfo().setCustIdType("0");
+param.getCardInfo().setCustIdNo(custIdNo);
+param.getCardInfo().setCardType(CARD_TYPE.CREDICT);
+param.getCardInfo().setExpiredDate(expiredDate);
+param.getCardInfo().setCvv2(cvv2);
+/*有卡鉴权开始*/
 
-BCMSWapPayResult bcMSWapPayResult = BCPay.startBCMSWapPay(param);
-if (bcMSWapPayResult.getType().ordinal() == 0) {
-    String phoneToken = bcMSWapPayResult.getPhoneToken();
-    //记录下phoneToken
-}
-else {
-	//handle the error message as you wish！
-	out.println(bcMSWapPayResult.getErrMsg());
-	out.println(bcMSWapPayResult.getErrDetail());
-}
+BCMSWapPayResult result = BCPay.startBCMSWapAuth(param);
+	if (result.getType().ordinal() == 0) {
+		System.out.println("phone token:" + result.getWapBill().getToken());
+	}
+	else {
+		//handle the error message as you wish！
+		out.println(result.getErrMsg());
+		out.println(result.getErrDetail());
+	}
 ```
 
 ### <a name="msWapPay">快捷支付</a>
 
-快捷支付和快捷鉴权调用同一接口，接收BCMSWapPayParameter参数对象，该对象封装了发起快捷鉴权及支付所需的各个具体参数。
+快捷支付接口接收BCMSWapBill参数对象，该对象封装了发起快捷支付所需的各个具体参数。
 
-发起快捷支付需要指定BCMSWapPayParameter对象的flag属性值为"pay"。
+发起快捷支付传入的参数对象需为鉴权接口返回对象result包含的BCMSWapBill对象，即result.getWapBill()。此对象已包含鉴权返回的令牌result.getWapBill().getToken()。
+
+发起快捷支付需要指定BCMSWapBill对象的flag属性值为"pay"，指定BCMSWapBill对象的verifyCode为用户收到的短信验证码，result.getWapBill().setVerifyCode(verifyCode)
 
 此接口返回BCMSWapPayResult对象，BCMSWapPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWapPayResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
 
 正确状态调用getMerTransDate()方法，getMerTransDate()方法返回商户交易时间,用来作为发起快捷单笔订单查询的输入参数。
 
+注意：一个custId对应一张卡信息。鉴权或支付时每次传入不同的custId,务必唯一对应一张卡信息。
+
 ```java
-BCMSWapPayParameter param = new BCMSWapPayParameter(PAY_CHANNEL.MS_WAP, 100, msBillNo, title, subject);
-param.setCustId(custId);
-param.setCustName(custName);
-param.setCustIdType("0");
-param.setCustIdNo(custIdNo);
-param.setBankNo(bankNo);
-param.setCardNo(cardNo);
-param.setPhoneNo(phoneNo);
-param.setFlag("pay");//此处固定为"pay"
+result.getWapBill().setVerifyCode(param.getToken());
+result.getWapBill().setFlag("pay");
+result.getWapBill().setSubject(subject);
 
-param.setPhoneToken(phoneToken);//鉴权返回的令牌
-param.setPhoneVerCode(phoneVerCode);//短信验证码
 
-BCMSWapPayResult bcMSWapPayResult = BCPay.startBCMSWapPay(param);
-if (bcMSWapPayResult.getType().ordinal() == 0) {
-    out.println(bcMSWapPayResult.getObjectId());
-    String phoneToken = bcMSWapPayResult.getChannelTradeNo();;
-    //记录下channelTradeNo
-}
-else {
+result = BCPay.startBCMSWapPay(result.getWapBill());
+r
+if (result.getType().ordinal() == 0) {
+	out.println(result.getObjectId());
+	out.println(result.getRefNo());
+	out.println("merTransDate:" + result.getMerTransDate());
+} else {
 	//handle the error message as you wish！
-	out.println(bcMSWapPayResult.getErrMsg());
-	out.println(bcMSWapPayResult.getErrDetail());
+	out.println(result.getErrMsg());
+	out.println(result.getErrDetail());
+	out.println("merTransDate:" + result.getMerTransDate());
 }
 ```
-发起快捷鉴权、支付代码中的参数对象BCMSWapPayParameter封装字段含义如下：
+发起快捷鉴权、支付代码中的参数对象BCMSWapBill封装字段含义如下：
 
 key | 说明
 ---- | -----
@@ -664,7 +676,7 @@ subject | 商品种类，该参数，是从民生电商处获得 (必填)
 billNo | 商户订单号，**<mark>8到30位数字和/或字母组合</mark>**，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复 (必填)
 title | 订单标题，UTF8编码格式，32个字节内，最长支持16个汉字 (必填)
 optional | 附加数据，用户自定义的参数，将会在webhook通知中原样返回，该字段主要用于商户携带订单的自定义数据 (选填)
-custId | 客户号,28位以内的数字或字母的组合 (必填)
+custId | 客户号,22位以内的数字或字母的组合 (必填)
 cardNo | 卡号,借记卡和信用卡的卡号 (必填)
 custName | 客户姓名,UTF8编码格式，32个字节内，最长支持16个汉字 (必填)
 custIdNo | 证件号,身份证号，军官证等 (必填)
@@ -674,8 +686,8 @@ phoneNo | 手机号,手机11位号码 (必填)
 flag | 快捷鉴权或是支付的标志字段,"sign"代表鉴权，"pay"代表支付 (必填)
 expiredDate | 信用卡有效日期, 信用卡的有效日期,使用信用卡时必填 (选填)
 cvv2 | 信用卡验证码, 信用卡背后的三位验证码，使用信用卡时必填 (选填)
-phoneToken | 手机校验码令牌，发起快捷支付时必填 (选填)
-phoneVerCode | 一般为6位，是民生电商发给用户的， 发起快捷支付时必填 (选填)
+token | 手机校验码令牌，发起快捷支付时必填 (选填)
+verifyCode | 一般为6位，是民生电商发给用户的， 发起快捷支付时必填 (选填)
 
 ### <a name="msWebQuery">网关单笔订单查询</a>
 
