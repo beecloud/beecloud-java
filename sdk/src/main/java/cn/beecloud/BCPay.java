@@ -28,7 +28,6 @@ import cn.beecloud.BCEumeration.MS_WAP_TYPE;
 import cn.beecloud.BCEumeration.PAY_CHANNEL;
 import cn.beecloud.BCEumeration.RESULT_TYPE;
 import cn.beecloud.bean.BCMSRefundResult;
-import cn.beecloud.bean.BCMSWapPayParameter;
 import cn.beecloud.bean.BCMSWapQueryResult;
 import cn.beecloud.bean.BCMSWebOrderBean;
 import cn.beecloud.bean.BCMSWebPayParameter;
@@ -820,10 +819,10 @@ public class BCPay {
     
 
     /**
-     * 发起明生快捷支付或鉴权
+     * 发起明生快捷鉴权
 	 * @param para {@link BCMSWapBill}支付参数
 	 * (必填)
-	 * @return 调起明生电商快捷：获取令牌或者发起支付
+	 * @return 调起明生电商快捷：获取令牌
 	 */
     public static BCMSWapPayResult startBCMSWapAuth(BCMSWapBill para) {
     	
