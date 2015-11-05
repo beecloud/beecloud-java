@@ -40,7 +40,7 @@ public class BCPayTest {
 	private String subject;
 	private String refundNo;
 	private String batchNo;
-	private String transferId1;
+	private String transferId1;  
 	private String transferId2;
 	private Map<String, Object> payOptional = new HashMap<String, Object>();
 	private Map<String, Object> refundOptional = new HashMap<String, Object>();
