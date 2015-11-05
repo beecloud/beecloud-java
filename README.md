@@ -639,13 +639,13 @@ BCMSWapPayResult result = BCPay.startBCMSWapAuth(param);
 
 发起快捷支付传入的参数对象需为鉴权接口返回对象result包含的BCMSWapBill对象，即result.getWapBill()。此对象已包含鉴权返回的令牌result.getWapBill().getToken()。
 
-发起快捷支付需要指定BCMSWapBill对象的flag属性值为"pay"，指定BCMSWapBill对象的verifyCode为用户收到的短信验证码，result.getWapBill().setVerifyCode(verifyCode)
+发起快捷支付需要设置BCMSWapBill对象的flag属性值为"pay"，设置BCMSWapBill对象的verifyCode为用户收到的短信验证码，result.getWapBill().setVerifyCode(verifyCode)，设置BCMSWapBill对象的subject属性，result.getWapBill().setSubject(subject)。
 
 此接口返回BCMSWapPayResult对象，BCMSWapPayResult对象包含两种状态，正确状态和错误状态，正确状态的BCMSWapPayResult的type类型字符串为OK； 对应值为0。错误状态调用getErrMsg()方法返回错误信息。调用getErrDetail()方法返回具体错误信息，开发者可任意显示，打印，或者进行日志。
 
 正确状态调用getMerTransDate()方法，getMerTransDate()方法返回商户交易时间,用来作为发起快捷单笔订单查询的输入参数。
 
-注意：一个custId对应一张卡信息。鉴权或支付时每次传入不同的custId,务必唯一对应一张卡信息。
+注意：一个custId对应一张卡信息。鉴权或支付时每次传入的custId,务必唯一对应一张卡信息。
 
 ```java
 result.getWapBill().setVerifyCode(param.getToken());
@@ -671,23 +671,30 @@ if (result.getType().ordinal() == 0) {
 key | 说明
 ---- | -----
 channel | 渠道类型，此处固定为"MS_WAP"（必填）
+type | 鉴权或支付类型，枚举类型，包含无卡（MS_WAP_TYPE.SAVED_CARD）和有卡（MS_WAP_TYPE.CARD）（必填）
 totalFee | 订单总金额， 必须是正整数，单位为分，最低100分 (必填)
-subject | 商品种类，该参数，是从民生电商处获得 (必填)
+subject | 商品种类，该参数，是从民生电商处获得，快捷支付时必填 (选填)
+custId | 客户号,22位以内的数字或字母的组合 (必填)
 billNo | 商户订单号，**<mark>8到30位数字和/或字母组合</mark>**，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复 (必填)
 title | 订单标题，UTF8编码格式，32个字节内，最长支持16个汉字 (必填)
 optional | 附加数据，用户自定义的参数，将会在webhook通知中原样返回，该字段主要用于商户携带订单的自定义数据 (选填)
-custId | 客户号,22位以内的数字或字母的组合 (必填)
+cardInfo | 卡信息，当type为CARD枚举时必填（选填）
+bankNo | 银行编号,需要快捷支付的银行号:<br>03080000	招商银行<br> 01020000	中国工商银行<br>01030000	中国农业银行<br>01050000	中国建设银行<br>01040000	中国银行<br>03100000	浦发银行<br>03010000	中国交通银行 <br>03050000	中国民生银行<br>SDB（暂不支持）	深圳发展银行<br>03060000	广东发展银行<br>03020000	中信银行<br>03040000	华夏银行<br>03090000	兴业银行<br>14055810	广州农村商业银行<br>04135810	广州银行<br>CUPS（暂不支持）	中国银联<br>65012900	上海农村商业银行<br>POST（暂不支持）	中国邮政<br>04031000	北京银行<br>03170000	渤海银行<br>14181000	北京农商银行<br>04240001	南京银行<br>03030000	中国光大银行<br>26150704	东亚银行<br>01033320	宁波银行<br>04233310	杭州银行<br>05105840	平安银行<br>04403600	徽商银行<br>03160000	浙商银行<br>04012900	上海银行<br>01000000	中国邮政储蓄银行<br>05213000	江苏银行<br>04202220	大连银行 (必填)
+phoneNo | 手机号,手机11位号码 (必填)
+flag | 快捷鉴权或是支付的标志字段,"sign"代表鉴权，"pay"代表支付 (必填)
+token | 手机校验码令牌，发起快捷支付时必填 (选填)
+verifyCode | 一般为6位，是民生电商发给用户的， 发起快捷支付时必填 (选填)
+
+BCMSWapBill中CardInfo类包含如下字段：
+key | 说明
+---- | -----
 cardNo | 卡号,借记卡和信用卡的卡号 (必填)
 custName | 客户姓名,UTF8编码格式，32个字节内，最长支持16个汉字 (必填)
 custIdNo | 证件号,身份证号，军官证等 (必填)
 custIdType | 客户证件类型：<br>0	身份证类型<br>1	护照类型<br>2	军官证<br>3	士兵证<br>4	港澳台通行证<br>5	临时身份证<br>6	户口本<br>7	其他类型证件<br>9	警官证<br>12	外国人居留证<br>15	回乡证<br>16	企业营业执照<br>17	法人代码证<br>18	台胞证0代表身份证 (必填)
-bankNo | 银行编号,需要快捷支付的银行号:<br>03080000	招商银行<br> 01020000	中国工商银行<br>01030000	中国农业银行<br>01050000	中国建设银行<br>01040000	中国银行<br>03100000	浦发银行<br>03010000	中国交通银行 <br>03050000	中国民生银行<br>SDB（暂不支持）	深圳发展银行<br>03060000	广东发展银行<br>03020000	中信银行<br>03040000	华夏银行<br>03090000	兴业银行<br>14055810	广州农村商业银行<br>04135810	广州银行<br>CUPS（暂不支持）	中国银联<br>65012900	上海农村商业银行<br>POST（暂不支持）	中国邮政<br>04031000	北京银行<br>03170000	渤海银行<br>14181000	北京农商银行<br>04240001	南京银行<br>03030000	中国光大银行<br>26150704	东亚银行<br>01033320	宁波银行<br>04233310	杭州银行<br>05105840	平安银行<br>04403600	徽商银行<br>03160000	浙商银行<br>04012900	上海银行<br>01000000	中国邮政储蓄银行<br>05213000	江苏银行<br>04202220	大连银行 (必填)
-phoneNo | 手机号,手机11位号码 (必填)
-flag | 快捷鉴权或是支付的标志字段,"sign"代表鉴权，"pay"代表支付 (必填)
 expiredDate | 信用卡有效日期, 信用卡的有效日期,使用信用卡时必填 (选填)
 cvv2 | 信用卡验证码, 信用卡背后的三位验证码，使用信用卡时必填 (选填)
-token | 手机校验码令牌，发起快捷支付时必填 (选填)
-verifyCode | 一般为6位，是民生电商发给用户的， 发起快捷支付时必填 (选填)
+cardType | 卡类型,枚举类型，包括DIRECT和CREDIT两种 (必填)
 
 ### <a name="msWebQuery">网关单笔订单查询</a>
 
