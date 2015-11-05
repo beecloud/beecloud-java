@@ -109,7 +109,7 @@ public class BCMSWapBill {
 	}
 	
 	/**
-	 * @param custId 客户号,22位以内的数字或字母的组合
+	 * @param custId 客户号,24位以内的数字或字母的组合
 	 * (必填)
 	 */
 	public void setCustId(String custId) {
