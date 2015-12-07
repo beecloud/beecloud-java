@@ -90,9 +90,9 @@ public class BCPay {
 
         Map<String, Object> ret = doPost(BCUtilPrivate.getkApiRefund(), param);
 
-        refund.setObjectId(ret.get("id").toString());
+        refund.setObjectId(StrUtil.toStr(ret.get("id")));
         if (ret.containsKey("url")) {
-            refund.setAliRefundUrl(ret.get("url").toString());
+            refund.setAliRefundUrl(StrUtil.toStr(ret.get("url")));
         }
 
         return refund;
@@ -257,11 +257,11 @@ public class BCPay {
         param.put("app_id", BCCache.getAppID());
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
-        param.put("channel", channel.toString());
+        param.put("channel", StrUtil.toStr(channel));
         param.put("refund_no", refundNo);
 
         Map<String, Object> ret = doGet(BCUtilPrivate.getkApiRefundUpdate(), param);
-        return ret.get("refund_status").toString();
+        return StrUtil.toStr(ret.get("refund_status"));
     }
 
     /**
@@ -307,7 +307,7 @@ public class BCPay {
         Map<String, Object> ret = doPost(BCUtilPrivate.getkApiTransfer(), param);
 
         if (ret.containsKey("url")) {
-            return ret.get("url").toString();
+            return StrUtil.toStr(ret.get("url"));
         }
         return "";
     }
@@ -330,7 +330,7 @@ public class BCPay {
 
         Map<String, Object> ret = doPost(BCUtilPrivate.getkApiTransfers(), param);
 
-        return ret.get("url").toString();
+        return StrUtil.toStr(ret.get("url"));
     }
 
     /**
@@ -346,7 +346,7 @@ public class BCPay {
         ValidationUtil.validateBatchRefund(batchRefund);
 
         Map<String, Object> param = new HashMap<String, Object>();
-        param.put("channel", batchRefund.getChannel().toString());
+        param.put("channel", StrUtil.toStr(batchRefund.getChannel()));
         param.put("agree", batchRefund.getAgree());
         param.put("ids", batchRefund.getIds());
         param.put("app_id", BCCache.getAppID());
@@ -358,7 +358,7 @@ public class BCPay {
         if (ret.containsKey("result_map")) {
             batchRefund.setIdResult((Map<String, String>) ret.get("result_map"));
             if (ret.containsKey("url")) {
-                batchRefund.setAliRefundUrl(ret.get("url").toString());
+                batchRefund.setAliRefundUrl(StrUtil.toStr(ret.get("url")));
             }
         }
 
@@ -391,7 +391,7 @@ public class BCPay {
         param.put("app_id", BCCache.getAppID());
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
-        param.put("channel", para.getChannel().toString());
+        param.put("channel", StrUtil.toStr(para.getChannel()));
         param.put("total_fee", para.getTotalFee());
         param.put("bill_no", para.getBillNo());
         param.put("title", para.getTitle());
@@ -439,7 +439,7 @@ public class BCPay {
         param.put("refund_fee", para.getRefundFee());
 
         if (para.getChannel() != null) {
-            param.put("channel", para.getChannel().toString());
+            param.put("channel", StrUtil.toStr(para.getChannel()));
         }
         if (para.isNeedApproval() != null) {
             param.put("need_approval", para.isNeedApproval());
@@ -456,7 +456,7 @@ public class BCPay {
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
         if (para.getChannel() != null) {
-            param.put("channel", para.getChannel().toString());
+            param.put("channel", StrUtil.toStr(para.getChannel().toString()));
         }
         if (para.getBillNo() != null) {
             param.put("bill_no", para.getBillNo());
@@ -496,7 +496,7 @@ public class BCPay {
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
         if (para.getChannel() != null) {
-            param.put("channel", para.getChannel().toString());
+            param.put("channel", StrUtil.toStr(para.getChannel()));
         }
         if (para.getBillNo() != null) {
             param.put("bill_no", para.getBillNo());
@@ -520,7 +520,7 @@ public class BCPay {
         param.put("app_id", BCCache.getAppID());
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign", BCUtilPrivate.getAppSignature(param.get("timestamp").toString()));
-        param.put("channel", StrUtil.toStr(order.getChannel().toString()));
+        param.put("channel", StrUtil.toStr(order.getChannel()));
         param.put("currency", StrUtil.toStr(order.getCurrency()));
         param.put("bill_no", order.getBillNo());
         param.put("title", order.getTitle());
@@ -552,7 +552,7 @@ public class BCPay {
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign",
                 BCUtilPrivate.getAppSignatureWithMasterSecret(param.get("timestamp").toString()));
-        param.put("channel", para.getChannel().toString());
+        param.put("channel", StrUtil.toStr(para.getChannel()));
         param.put("transfer_no", para.getTransferNo());
         param.put("total_fee", para.getTotalFee());
         param.put("desc", para.getDescription());
@@ -580,7 +580,7 @@ public class BCPay {
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign",
                 BCUtilPrivate.getAppSignatureWithMasterSecret(param.get("timestamp").toString()));
-        param.put("channel", para.getChannel().toString());
+        param.put("channel", StrUtil.toStr(para.getChannel()));
         param.put("batch_no", para.getBatchNo());
         param.put("account_name", para.getAccountName());
         List<Map<String, Object>> transferList = new ArrayList<Map<String, Object>>();
@@ -650,7 +650,7 @@ public class BCPay {
         bcOrder.setBillNo(StrUtil.toStr(bill.get("bill_no")));
         bcOrder.setTotalFee((Integer) bill.get("total_fee"));
         bcOrder.setTitle(StrUtil.toStr(bill.get("title")));
-        bcOrder.setChannel(PAY_CHANNEL.valueOf(bill.get("sub_channel").toString()));
+        bcOrder.setChannel(PAY_CHANNEL.valueOf(StrUtil.toStr(bill.get("sub_channel"))));
         bcOrder.setResulted(((Boolean) bill.get("spay_result")));
         if (bill.containsKey("trade_no") && bill.get("trade_no") != null) {
             bcOrder.setChannelTradeNo(StrUtil.toStr(bill.get("trade_no")));
@@ -669,20 +669,20 @@ public class BCPay {
      * 构建返回BCRefund bean
      */
     private static void generateBCRefundBean(Map<String, Object> refund, BCRefund bcRefund) {
-        bcRefund.setObjectId(refund.get("id").toString());
-        bcRefund.setBillNo(refund.get("bill_no").toString());
-        bcRefund.setChannel(PAY_CHANNEL.valueOf(refund.get("sub_channel").toString()));
+        bcRefund.setObjectId(StrUtil.toStr(refund.get("id")));
+        bcRefund.setBillNo(StrUtil.toStr(refund.get("bill_no")));
+        bcRefund.setChannel(PAY_CHANNEL.valueOf(StrUtil.toStr(refund.get("sub_channel"))));
         bcRefund.setFinished((Boolean) refund.get("finish"));
         bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long) refund
                 .get("create_time")));
-        bcRefund.setOptionalString(refund.get("optional").toString());
+        bcRefund.setOptionalString(StrUtil.toStr(refund.get("optional")));
         bcRefund.setRefunded((Boolean) refund.get("result"));
-        bcRefund.setTitle(refund.get("title").toString());
+        bcRefund.setTitle(StrUtil.toStr(refund.get("title")));
         bcRefund.setTotalFee((Integer) refund.get("total_fee"));
         bcRefund.setRefundFee((Integer) refund.get("refund_fee"));
-        bcRefund.setRefundNo(refund.get("refund_no").toString());
+        bcRefund.setRefundNo(StrUtil.toStr(refund.get("refund_no")));
         if (refund.containsKey("message_detail")) {
-            bcRefund.setMessageDetail(refund.get("message_detail").toString());
+            bcRefund.setMessageDetail(StrUtil.toStr(refund.get("message_detail")));
         }
     }
 
@@ -845,41 +845,32 @@ public class BCPay {
      * 组建返回订单
      */
     private static void placeOrder(BCOrder order, Map<String, Object> ret) {
-        order.setObjectId(ret.get("id").toString());
+        order.setObjectId(StrUtil.toStr(ret.get("id")));
         switch (order.getChannel()) {
             case WX_NATIVE:
-                if (ret.containsKey("code_url") && null != ret.get("code_url")) {
-                    order.setCodeUrl(ret.get("code_url").toString());
-                }
+                    order.setCodeUrl(StrUtil.toStr(ret.get("code_url")));
                 break;
             case WX_JSAPI:
-                order.setWxJSAPIMap(generateWXJSAPIMap(ret));
+                    order.setWxJSAPIMap(generateWXJSAPIMap(ret));
                 break;
             case ALI_WEB:
             case ALI_QRCODE:
             case ALI_WAP:
-                if (ret.containsKey("html") && null != ret.get("html") && ret.containsKey("url")
-                        && null != ret.get("url")) {
-                    order.setHtml(ret.get("html").toString());
-                    order.setUrl(ret.get("url").toString());
-                }
+                    order.setHtml(StrUtil.toStr(ret.get("html")));
+                    order.setUrl(StrUtil.toStr(ret.get("url")));
                 break;
             case UN_WEB:
             case JD_WAP:
             case JD_WEB:
             case KUAIQIAN_WAP:
             case KUAIQIAN_WEB:
-                if (ret.containsKey("html") && null != ret.get("html")) {
-                    order.setHtml(ret.get("html").toString());
-                }
+                    order.setHtml(StrUtil.toStr(ret.get("html")));
                 break;
             case YEE_WAP:
             case YEE_WEB:
             case BD_WEB:
             case BD_WAP:
-                if (ret.containsKey("url") && null != ret.get("url")) {
-                    order.setUrl(ret.get("url").toString());
-                }
+                    order.setUrl(StrUtil.toStr(ret.get("url")));
             default:
                 break;
         }
