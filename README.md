@@ -700,7 +700,7 @@ try {
     out.println(ex.getMessage());
 }
 ```
-代码中的参数对象BCRefund封装字段含义如下：
+代码中的参数对象BCBatchRefund封装字段含义如下：
 请求参数及返回字段：
 
 key | 说明
