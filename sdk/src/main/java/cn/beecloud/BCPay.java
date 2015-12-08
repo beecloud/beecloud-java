@@ -848,29 +848,29 @@ public class BCPay {
         order.setObjectId(StrUtil.toStr(ret.get("id")));
         switch (order.getChannel()) {
             case WX_NATIVE:
-                    order.setCodeUrl(StrUtil.toStr(ret.get("code_url")));
+                order.setCodeUrl(StrUtil.toStr(ret.get("code_url")));
                 break;
             case WX_JSAPI:
-                    order.setWxJSAPIMap(generateWXJSAPIMap(ret));
+                order.setWxJSAPIMap(generateWXJSAPIMap(ret));
                 break;
             case ALI_WEB:
             case ALI_QRCODE:
             case ALI_WAP:
-                    order.setHtml(StrUtil.toStr(ret.get("html")));
-                    order.setUrl(StrUtil.toStr(ret.get("url")));
+                order.setHtml(StrUtil.toStr(ret.get("html")));
+                order.setUrl(StrUtil.toStr(ret.get("url")));
                 break;
             case UN_WEB:
             case JD_WAP:
             case JD_WEB:
             case KUAIQIAN_WAP:
             case KUAIQIAN_WEB:
-                    order.setHtml(StrUtil.toStr(ret.get("html")));
+                order.setHtml(StrUtil.toStr(ret.get("html")));
                 break;
             case YEE_WAP:
             case YEE_WEB:
             case BD_WEB:
             case BD_WAP:
-                    order.setUrl(StrUtil.toStr(ret.get("url")));
+                order.setUrl(StrUtil.toStr(ret.get("url")));
             default:
                 break;
         }
