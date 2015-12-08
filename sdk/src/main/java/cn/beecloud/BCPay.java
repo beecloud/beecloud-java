@@ -117,7 +117,7 @@ public class BCPay {
 
         Map<String, Object> ret = doGet(BCUtilPrivate.getkApiQueryBill(), param);
 
-        return generateBCOrderList((List<Map<String, Object>>) ret.get("bills"));
+        return generateBCOrderList(CastUtil.object2ListMap(ret.get("bills")));
 
     }
 
@@ -145,7 +145,7 @@ public class BCPay {
         urlSb.append("?para=");
         Map<String, Object> ret = doGet(urlSb.toString(), param);
 
-        return generateBCOrder((Map<String, Object>) ret.get("pay"));
+        return generateBCOrder(CastUtil.object2MapStringObject(ret.get("pay")));
     }
 
     /**
@@ -166,7 +166,7 @@ public class BCPay {
 
         Map<String, Object> ret = doGet(BCUtilPrivate.getkApiQueryBillCount(), param);
 
-        return (Integer) ret.get("count");
+        return CastUtil.object2Integer(ret.get("count"));
     }
 
     /**
@@ -187,7 +187,7 @@ public class BCPay {
 
         Map<String, Object> ret = doGet(BCUtilPrivate.getkApiQueryRefund(), param);
 
-        return generateBCRefundList((List<Map<String, Object>>) ret.get("refunds"));
+        return generateBCRefundList(CastUtil.object2ListMap(ret.get("refunds")));
     }
 
     /**
@@ -214,7 +214,7 @@ public class BCPay {
         urlSb.append("?para=");
         Map<String, Object> ret = doGet(urlSb.toString(), param);
 
-        return generateBCRefund((Map<String, Object>) ret.get("refund"));
+        return generateBCRefund(CastUtil.object2MapStringObject(ret.get("refund")));
 
     }
 
@@ -235,7 +235,7 @@ public class BCPay {
 
         Map<String, Object> ret = doGet(BCUtilPrivate.getkApiQueryRefundCount(), param);
 
-        return (Integer) ret.get("count");
+        return CastUtil.object2Integer(ret.get("count"));
     }
 
     /**
@@ -356,7 +356,7 @@ public class BCPay {
         Map<String, Object> ret = doPut(BCUtilPrivate.getApiBatchRefund(), param);
 
         if (ret.containsKey("result_map")) {
-            batchRefund.setIdResult((Map<String, String>) ret.get("result_map"));
+            batchRefund.setIdResult(CastUtil.object2MapStringString(ret.get("result_map")));
             if (ret.containsKey("url")) {
                 batchRefund.setAliRefundUrl(StrUtil.toStr(ret.get("url")));
             }
@@ -648,21 +648,21 @@ public class BCPay {
     private static void generateBCOrderBean(Map<String, Object> bill, BCOrder bcOrder) {
         bcOrder.setObjectId(StrUtil.toStr(bill.get("id")));
         bcOrder.setBillNo(StrUtil.toStr(bill.get("bill_no")));
-        bcOrder.setTotalFee((Integer) bill.get("total_fee"));
+        bcOrder.setTotalFee(CastUtil.object2Integer(bill.get("total_fee")));
         bcOrder.setTitle(StrUtil.toStr(bill.get("title")));
         bcOrder.setChannel(PAY_CHANNEL.valueOf(StrUtil.toStr(bill.get("sub_channel"))));
-        bcOrder.setResulted(((Boolean) bill.get("spay_result")));
+        bcOrder.setResulted(CastUtil.object2Boolean(bill.get("spay_result")));
         if (bill.containsKey("trade_no") && bill.get("trade_no") != null) {
             bcOrder.setChannelTradeNo(StrUtil.toStr(bill.get("trade_no")));
         }
         bcOrder.setOptionalString(StrUtil.toStr(bill.get("optional")));
-        bcOrder.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long) bill
-                .get("create_time")));
+        bcOrder.setDateTime(BCUtilPrivate
+                .transferDateFromLongToString(CastUtil.object2Long(bill.get("create_time"))));
         if (bill.containsKey("message_detail")) {
             bcOrder.setMessageDetail(StrUtil.toStr(bill.get("message_detail")));
         }
-        bcOrder.setRefundResult((Boolean) bill.get("refund_result"));
-        bcOrder.setRevertResult((Boolean) bill.get("revert_result"));
+        bcOrder.setRefundResult(CastUtil.object2Boolean(bill.get("refund_result")));
+        bcOrder.setRevertResult(CastUtil.object2Boolean(bill.get("revert_result")));
     }
 
     /**
@@ -672,14 +672,14 @@ public class BCPay {
         bcRefund.setObjectId(StrUtil.toStr(refund.get("id")));
         bcRefund.setBillNo(StrUtil.toStr(refund.get("bill_no")));
         bcRefund.setChannel(PAY_CHANNEL.valueOf(StrUtil.toStr(refund.get("sub_channel"))));
-        bcRefund.setFinished((Boolean) refund.get("finish"));
-        bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long) refund
-                .get("create_time")));
+        bcRefund.setFinished(CastUtil.object2Boolean(refund.get("finish")));
+        bcRefund.setDateTime(BCUtilPrivate
+                .transferDateFromLongToString(CastUtil.object2Long(refund.get("create_time"))));
         bcRefund.setOptionalString(StrUtil.toStr(refund.get("optional")));
-        bcRefund.setRefunded((Boolean) refund.get("result"));
+        bcRefund.setRefunded(CastUtil.object2Boolean(refund.get("result")));
         bcRefund.setTitle(StrUtil.toStr(refund.get("title")));
-        bcRefund.setTotalFee((Integer) refund.get("total_fee"));
-        bcRefund.setRefundFee((Integer) refund.get("refund_fee"));
+        bcRefund.setTotalFee(CastUtil.object2Integer(refund.get("total_fee")));
+        bcRefund.setRefundFee(CastUtil.object2Integer(refund.get("refund_fee")));
         bcRefund.setRefundNo(StrUtil.toStr(refund.get("refund_no")));
         if (refund.containsKey("message_detail")) {
             bcRefund.setMessageDetail(StrUtil.toStr(refund.get("message_detail")));
@@ -724,7 +724,7 @@ public class BCPay {
             if (response.getStatus() == 200) {
                 Map<String, Object> ret = response.readEntity(Map.class);
 
-                Integer resultCode = (Integer) ret.get("result_code");
+                Integer resultCode = CastUtil.object2Integer(ret.get("result_code"));
                 String resultMessage = StrUtil.toStr(ret.get("result_msg"));
                 String errorDetail = StrUtil.toStr(ret.get("err_detail"));
 
@@ -770,7 +770,7 @@ public class BCPay {
             if (response.getStatus() == 200) {
                 Map<String, Object> ret = response.readEntity(Map.class);
 
-                Integer resultCode = (Integer) ret.get("result_code");
+                Integer resultCode = CastUtil.object2Integer(ret.get("result_code"));
                 String resultMessage = StrUtil.toStr(ret.get("result_msg"));
                 String errorDetail = StrUtil.toStr(ret.get("err_detail"));
 
@@ -819,7 +819,7 @@ public class BCPay {
             if (response.getStatus() == 200) {
                 Map<String, Object> ret = response.readEntity(Map.class);
 
-                Integer resultCode = (Integer) ret.get("result_code");
+                Integer resultCode = CastUtil.object2Integer(ret.get("result_code"));
                 String resultMessage = StrUtil.toStr(ret.get("result_msg"));
                 String errorDetail = StrUtil.toStr(ret.get("err_detail"));
                 boolean isSuccess = (resultCode == 0);
