@@ -101,9 +101,9 @@ public class BCPayMultiApp {
 
         Map<String, Object> ret = doPost(BCUtilPrivate.getkApiRefund(), param);
 
-        refund.setObjectId(ret.get("id").toString());
+        refund.setObjectId(StrUtil.toStr(ret.get("id")));
         if (ret.containsKey("url")) {
-            refund.setAliRefundUrl(ret.get("url").toString());
+            refund.setAliRefundUrl(StrUtil.toStr(ret.get("url")));
         }
 
         return refund;
@@ -127,7 +127,7 @@ public class BCPayMultiApp {
 
         Map<String, Object> ret = doGet(BCUtilPrivate.getkApiQueryBill(), param);
 
-        return generateBCOrderList((List<Map<String, Object>>) ret.get("bills"));
+        return generateBCOrderList(CastUtil.object2ListMap(ret.get("bills")));
 
     }
 
@@ -153,7 +153,7 @@ public class BCPayMultiApp {
         urlSb.append("?para=");
         Map<String, Object> ret = doGet(urlSb.toString(), param);
 
-        return generateBCOrder((Map<String, Object>) ret.get("pay"));
+        return generateBCOrder(CastUtil.object2MapStringObject(ret.get("pay")));
     }
 
     /**
@@ -173,7 +173,7 @@ public class BCPayMultiApp {
 
         Map<String, Object> ret = doGet(BCUtilPrivate.getkApiQueryBillCount(), param);
 
-        return (Integer) ret.get("count");
+        return CastUtil.object2Integer(ret.get("count"));
     }
 
     /**
@@ -194,7 +194,7 @@ public class BCPayMultiApp {
 
         Map<String, Object> ret = doGet(BCUtilPrivate.getkApiQueryRefund(), param);
 
-        return generateBCRefundList((List<Map<String, Object>>) ret.get("refunds"));
+        return generateBCRefundList(CastUtil.object2ListMap(ret.get("refunds")));
     }
 
     /**
@@ -219,7 +219,7 @@ public class BCPayMultiApp {
         urlSb.append("?para=");
         Map<String, Object> ret = doGet(urlSb.toString(), param);
 
-        return generateBCRefund((Map<String, Object>) ret.get("refund"));
+        return generateBCRefund(CastUtil.object2MapStringObject(ret.get("refund")));
 
     }
 
@@ -240,7 +240,7 @@ public class BCPayMultiApp {
 
         Map<String, Object> ret = doGet(BCUtilPrivate.getkApiQueryBillCount(), param);
 
-        return (Integer) ret.get("count");
+        return CastUtil.object2Integer(ret.get("count"));
     }
 
     /**
@@ -262,11 +262,11 @@ public class BCPayMultiApp {
         param.put("app_id", this.appId);
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign", this.getAppSignature(param.get("timestamp").toString()));
-        param.put("channel", channel.toString());
+        param.put("channel", StrUtil.toStr(channel.toString()));
         param.put("refund_no", refundNo);
 
         Map<String, Object> ret = doGet(BCUtilPrivate.getkApiRefundUpdate(), param);
-        return ret.get("refund_status").toString();
+        return StrUtil.toStr(ret.get("refund_status"));
     }
 
     /**
@@ -288,7 +288,7 @@ public class BCPayMultiApp {
         Map<String, Object> ret = doPost(BCUtilPrivate.getkApiTransfer(), param);
 
         if (ret.containsKey("url")) {
-            return ret.get("url").toString();
+            return StrUtil.toStr(ret.get("url"));
         }
         return "";
     }
@@ -311,7 +311,7 @@ public class BCPayMultiApp {
 
         Map<String, Object> ret = doPost(BCUtilPrivate.getkApiTransfers(), param);
 
-        return ret.get("url").toString();
+        return StrUtil.toStr(ret.get("url"));
     }
 
     /**
@@ -325,7 +325,7 @@ public class BCPayMultiApp {
     public BCBatchRefund startBatchRefund(BCBatchRefund batchRefund) throws BCException {
 
         Map<String, Object> param = new HashMap<String, Object>();
-        param.put("channel", batchRefund.getChannel().toString());
+        param.put("channel", StrUtil.toStr(batchRefund.getChannel()));
         param.put("agree", batchRefund.getAgree());
         param.put("ids", batchRefund.getIds());
         param.put("app_id", this.appId);
@@ -335,9 +335,9 @@ public class BCPayMultiApp {
         Map<String, Object> ret = doPut(BCUtilPrivate.getApiBatchRefund(), param);
 
         if (ret.containsKey("result_map")) {
-            batchRefund.setIdResult((Map<String, String>) ret.get("result_map"));
+            batchRefund.setIdResult(CastUtil.object2MapStringString(ret.get("result_map")));
             if (ret.containsKey("url")) {
-                batchRefund.setAliRefundUrl(ret.get("url").toString());
+                batchRefund.setAliRefundUrl(StrUtil.toStr(ret.get("url")));
             }
         }
 
@@ -391,7 +391,7 @@ public class BCPayMultiApp {
         param.put("app_id", this.appId);
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign", this.getAppSignature(param.get("timestamp").toString()));
-        param.put("channel", para.getChannel().toString());
+        param.put("channel", StrUtil.toStr(para.getChannel()));
         param.put("total_fee", para.getTotalFee());
         param.put("bill_no", para.getBillNo());
         param.put("title", para.getTitle());
@@ -439,7 +439,7 @@ public class BCPayMultiApp {
         param.put("refund_fee", para.getRefundFee());
 
         if (para.getChannel() != null) {
-            param.put("channel", para.getChannel().toString());
+            param.put("channel", StrUtil.toStr(para.getChannel()));
         }
         if (para.isNeedApproval() != null) {
             param.put("need_approval", para.isNeedApproval());
@@ -456,7 +456,7 @@ public class BCPayMultiApp {
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign", this.getAppSignature(param.get("timestamp").toString()));
         if (para.getChannel() != null) {
-            param.put("channel", para.getChannel().toString());
+            param.put("channel", StrUtil.toStr(para.getChannel()));
         }
         if (para.getBillNo() != null) {
             param.put("bill_no", para.getBillNo());
@@ -495,7 +495,7 @@ public class BCPayMultiApp {
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign", this.getAppSignature(param.get("timestamp").toString()));
         if (para.getChannel() != null) {
-            param.put("channel", para.getChannel().toString());
+            param.put("channel", StrUtil.toStr(para.getChannel()));
         }
         if (para.getBillNo() != null) {
             param.put("bill_no", para.getBillNo());
@@ -550,7 +550,7 @@ public class BCPayMultiApp {
         param.put("timestamp", System.currentTimeMillis());
         param.put("app_sign",
                 this.getAppSignatureWithMasterSecret(param.get("timestamp").toString()));
-        param.put("channel", para.getChannel().toString());
+        param.put("channel", StrUtil.toStr(para.getChannel()));
         param.put("transfer_no", para.getTransferNo());
         param.put("total_fee", para.getTotalFee());
         param.put("desc", para.getDescription());
@@ -644,45 +644,45 @@ public class BCPayMultiApp {
      * 构建返回BCOrder bean
      */
     private static void generateBCOrderBean(Map<String, Object> bill, BCOrder bcOrder) {
-        bcOrder.setObjectId(bill.get("id").toString());
-        bcOrder.setBillNo(bill.get("bill_no").toString());
-        bcOrder.setTotalFee((Integer) bill.get("total_fee"));
-        bcOrder.setTitle(bill.get("title").toString());
-        bcOrder.setChannel(PAY_CHANNEL.valueOf(bill.get("sub_channel").toString()));
-        bcOrder.setResulted(((Boolean) bill.get("spay_result")));
-        if (bill.containsKey("trade_no") && bill.get("trade_no") != null) {
-            bcOrder.setChannelTradeNo(bill.get("trade_no").toString());
+        bcOrder.setObjectId(StrUtil.toStr(bill.get("id")));
+        bcOrder.setBillNo(StrUtil.toStr(bill.get("bill_no")));
+        bcOrder.setTotalFee(CastUtil.object2Integer(bill.get("total_fee")));
+        bcOrder.setTitle(StrUtil.toStr(bill.get("title")));
+        bcOrder.setChannel(PAY_CHANNEL.valueOf(StrUtil.toStr(bill.get("sub_channel"))));
+        bcOrder.setResulted(CastUtil.object2Boolean(bill.get("spay_result")));
+        if (bill.containsKey("trade_no")) {
+            bcOrder.setChannelTradeNo(StrUtil.toStr(bill.get("trade_no")));
         }
-        bcOrder.setOptionalString((bill.get("optional").toString()));
-        bcOrder.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long) bill
-                .get("create_time")));
+        bcOrder.setOptionalString(StrUtil.toStr(bill.get("optional")));
+        bcOrder.setDateTime(BCUtilPrivate
+                .transferDateFromLongToString(CastUtil.object2Long(bill.get("create_time"))));
         if (bill.containsKey("message_detail")) {
-            bcOrder.setMessageDetail(bill.get("message_detail").toString());
+            bcOrder.setMessageDetail(StrUtil.toStr(bill.get("message_detail")));
         }
-        bcOrder.setRefundResult((Boolean) bill.get("refund_result"));
-        bcOrder.setRevertResult((Boolean) bill.get("revert_result"));
+        bcOrder.setRefundResult(CastUtil.object2Boolean(bill.get("refund_result")));
+        bcOrder.setRevertResult(CastUtil.object2Boolean(bill.get("revert_result")));
     }
 
     /**
      * 构建返回BCRefund bean
      */
     private static void generateBCRefundBean(Map<String, Object> refund, BCRefund bcRefund) {
-        bcRefund.setObjectId(refund.get("id").toString());
-        bcRefund.setBillNo(refund.get("bill_no").toString());
-        bcRefund.setChannel(PAY_CHANNEL.valueOf(refund.get("sub_channel").toString()));
-        bcRefund.setFinished((Boolean) refund.get("finish"));
-        bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long) refund
-                .get("create_time")));
-        bcRefund.setOptionalString(refund.get("optional").toString());
-        bcRefund.setRefunded((Boolean) refund.get("result"));
-        bcRefund.setTitle(refund.get("title").toString());
-        bcRefund.setTotalFee((Integer) refund.get("total_fee"));
-        bcRefund.setRefundFee((Integer) refund.get("refund_fee"));
-        bcRefund.setRefundNo(refund.get("refund_no").toString());
-        bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long) refund
-                .get("create_time")));
+        bcRefund.setObjectId(StrUtil.toStr(refund.get("id")));
+        bcRefund.setBillNo(StrUtil.toStr(refund.get("bill_no")));
+        bcRefund.setChannel(PAY_CHANNEL.valueOf(StrUtil.toStr(refund.get("sub_channel"))));
+        bcRefund.setFinished(CastUtil.object2Boolean(refund.get("finish")));
+        bcRefund.setDateTime(BCUtilPrivate
+                .transferDateFromLongToString(CastUtil.object2Long(refund.get("create_time"))));
+        bcRefund.setOptionalString(StrUtil.toStr(refund.get("optional")));
+        bcRefund.setRefunded(CastUtil.object2Boolean(refund.get("result")));
+        bcRefund.setTitle(StrUtil.toStr(refund.get("title")));
+        bcRefund.setTotalFee(CastUtil.object2Integer(refund.get("total_fee")));
+        bcRefund.setRefundFee(CastUtil.object2Integer(refund.get("refund_fee")));
+        bcRefund.setRefundNo(StrUtil.toStr(refund.get("refund_no")));
+        bcRefund.setDateTime(BCUtilPrivate
+                .transferDateFromLongToString(CastUtil.object2Long(refund.get("create_time"))));
         if (refund.containsKey("message_detail")) {
-            bcRefund.setMessageDetail(refund.get("message_detail").toString());
+            bcRefund.setMessageDetail(StrUtil.toStr(refund.get("message_detail")));
         }
     }
 
@@ -724,9 +724,9 @@ public class BCPayMultiApp {
             if (response.getStatus() == 200) {
                 Map<String, Object> ret = response.readEntity(Map.class);
 
-                Integer resultCode = (Integer) ret.get("result_code");
-                String resultMessage = ret.get("result_msg").toString();
-                String errorDetail = ret.get("err_detail").toString();
+                Integer resultCode = CastUtil.object2Integer(ret.get("result_code"));
+                String resultMessage = StrUtil.toStr(ret.get("result_msg"));
+                String errorDetail = StrUtil.toStr(ret.get("err_detail"));
 
                 boolean isSuccess = (resultCode == 0);
                 if (isSuccess) {
@@ -766,9 +766,9 @@ public class BCPayMultiApp {
             if (response.getStatus() == 200) {
                 Map<String, Object> ret = response.readEntity(Map.class);
 
-                Integer resultCode = (Integer) ret.get("result_code");
-                String resultMessage = ret.get("result_msg").toString();
-                String errorDetail = ret.get("err_detail").toString();
+                Integer resultCode = CastUtil.object2Integer(ret.get("result_code"));
+                String resultMessage = StrUtil.toStr(ret.get("result_msg"));
+                String errorDetail = StrUtil.toStr(ret.get("err_detail"));
 
                 boolean isSuccess = (resultCode == 0);
                 if (isSuccess) {
@@ -813,9 +813,9 @@ public class BCPayMultiApp {
             if (response.getStatus() == 200) {
                 Map<String, Object> ret = response.readEntity(Map.class);
 
-                Integer resultCode = (Integer) ret.get("result_code");
-                String resultMessage = ret.get("result_msg").toString();
-                String errorDetail = ret.get("err_detail").toString();
+                Integer resultCode = CastUtil.object2Integer(ret.get("result_code"));
+                String resultMessage = StrUtil.toStr(ret.get("result_msg"));
+                String errorDetail = StrUtil.toStr(ret.get("err_detail"));
 
                 boolean isSuccess = (resultCode == 0);
 
@@ -837,12 +837,10 @@ public class BCPayMultiApp {
      * 组建返回订单
      */
     private static void placeOrder(BCOrder order, Map<String, Object> ret) {
-        order.setObjectId(ret.get("id").toString());
+        order.setObjectId(StrUtil.toStr(ret.get("id")));
         switch (order.getChannel()) {
             case WX_NATIVE:
-                if (ret.containsKey("code_url") && null != ret.get("code_url")) {
-                    order.setCodeUrl(ret.get("code_url").toString());
-                }
+                order.setCodeUrl(StrUtil.toStr(ret.get("code_url")));
                 break;
             case WX_JSAPI:
                 order.setWxJSAPIMap(generateWXJSAPIMap(ret));
@@ -850,28 +848,21 @@ public class BCPayMultiApp {
             case ALI_WEB:
             case ALI_QRCODE:
             case ALI_WAP:
-                if (ret.containsKey("html") && null != ret.get("html") && ret.containsKey("url")
-                        && null != ret.get("url")) {
-                    order.setHtml(ret.get("html").toString());
-                    order.setUrl(ret.get("url").toString());
-                }
+                order.setHtml(StrUtil.toStr(ret.get("html")));
+                order.setUrl(StrUtil.toStr(ret.get("url")));
                 break;
             case UN_WEB:
             case JD_WAP:
             case JD_WEB:
             case KUAIQIAN_WAP:
             case KUAIQIAN_WEB:
-                if (ret.containsKey("html") && null != ret.get("html")) {
-                    order.setHtml(ret.get("html").toString());
-                }
+                order.setHtml(StrUtil.toStr(ret.get("html")));
                 break;
             case YEE_WAP:
             case YEE_WEB:
             case BD_WEB:
             case BD_WAP:
-                if (ret.containsKey("url") && null != ret.get("url")) {
-                    order.setUrl(ret.get("url").toString());
-                }
+                order.setUrl(StrUtil.toStr(ret.get("url")));
             default:
                 break;
         }
