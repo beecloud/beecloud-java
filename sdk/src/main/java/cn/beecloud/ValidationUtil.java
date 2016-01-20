@@ -3,15 +3,7 @@ package cn.beecloud;
 import cn.beecloud.BCEumeration.PAY_CHANNEL;
 import cn.beecloud.BCEumeration.RESULT_TYPE;
 import cn.beecloud.BCEumeration.TRANSFER_CHANNEL;
-import cn.beecloud.bean.BCBatchRefund;
-import cn.beecloud.bean.BCException;
-import cn.beecloud.bean.BCInternationlOrder;
-import cn.beecloud.bean.BCOrder;
-import cn.beecloud.bean.BCQueryParameter;
-import cn.beecloud.bean.BCRefund;
-import cn.beecloud.bean.ALITransferData;
-import cn.beecloud.bean.TransferParameter;
-import cn.beecloud.bean.TransfersParameter;
+import cn.beecloud.bean.*;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -150,6 +142,24 @@ public class ValidationUtil {
 
     private final static String PAYPAL_RETURN_URL_EMPTY = "PAYPAL直接支付returnUrl不能为空！";
 
+    private final static String TRADE_SOURCE_EMPTY = "tradeSource 不能为空！";
+
+    private final static String BANK_CODE_EMPTY = "bankCode 不能为空！";
+
+    private final static String BANK_ASSOCIATED_CODE_EMPTY = "bankAssociatedCode 不能为空！";
+
+    private final static String BANK_FULL_NAME_EMPTY = "bankFullName 不能为空！";
+
+    private final static String CARD_TYPE_EMPTY = "cardType 不能为空！";
+
+    private final static String ACCOUNT_TYPE_EMPTY = "accountType 不能为空！";
+
+    private final static String ACCOUNT_NO_EMPTY = "accountNo 不能为空！";
+
+    private final static String ACCOUNT_NAME_EMPTY = "accountName 不能为空！";
+
+    private final static String OPTIONAL_EMPTY = "optional 不能为空！";
+
     static void validateQueryRefundStatus(PAY_CHANNEL channel, String refundNo) throws BCException {
         if (channel == null) {
             throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
@@ -274,6 +284,52 @@ public class ValidationUtil {
                             RESULT_TYPE.PARAM_INVALID.name(), TITLE_FORMAT_INVALID);
                 }
             }
+    }
+
+    static void validateBCTransfer(BCTransferParameter para) throws BCException {
+
+        if (para == null) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), PAY_PARAM_EMPTY);
+        }
+        if (StrUtil.empty(para.getBillNo())) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), BILL_NO_EMPTY);
+        } else if (StrUtil.empty(para.getTitle())) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), TITLE_EMPTY);
+        } else if (StrUtil.empty(para.getTotalFee())) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), TOTAL_FEE_EMPTY);
+        } else if (para.getBillNo() != null && !para.getBillNo().matches("[0-9A-Za-z]{8,32}")) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), BILL_NO_FORMAT_INVALID);
+        } else if (StrUtil.empty(para.getTradeSource())) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), TRADE_SOURCE_EMPTY);
+        } else if (StrUtil.empty(para.getBankCode())) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), BANK_CODE_EMPTY);
+        } else if (StrUtil.empty(para.getBankAssociatedCode())) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), BANK_ASSOCIATED_CODE_EMPTY);
+        } else if (StrUtil.empty(para.getBankFullName())) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), BANK_FULL_NAME_EMPTY);
+        } else if (StrUtil.empty(para.getCardType())) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), CARD_TYPE_EMPTY);
+        } else if (StrUtil.empty(para.getAccountType())) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), ACCOUNT_TYPE_EMPTY);
+        } else if (StrUtil.empty(para.getAccountNo())) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), ACCOUNT_NO_EMPTY);
+        } else if (StrUtil.empty(para.getAccountName())) {
+            throw new BCException(RESULT_TYPE.PARAM_INVALID.ordinal(),
+                    RESULT_TYPE.PARAM_INVALID.name(), ACCOUNT_NAME_EMPTY);
+        }
+
     }
 
     static void validateBCRefund(BCRefund para) throws BCException {

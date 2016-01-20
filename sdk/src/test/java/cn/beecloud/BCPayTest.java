@@ -44,6 +44,7 @@ public class BCPayTest {
         TransferTest.testTransfer();
         TransfersTest.testTransfers();
         InternationalPayTest.testInternationalPay();
+        TransferTest.testBCTransfer();
 
         /**
          * 测试SANDBOX模式

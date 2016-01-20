@@ -228,6 +228,20 @@ public class TestConstant {
 
     public final static String TEST_MODE_SUPPORT_ERROR = "测试模式仅支持国内支付(WX_JSAPI暂不支持)、订单查询、订单总数查询、单笔订单查询";
 
+    public final static String TRADE_SOURCE_EMPTY = "tradeSource 不能为空！";
+
+    public final static String BANK_CODE_EMPTY = "bankCode 不能为空！";
+
+    public final static String BANK_ASSOCIATED_CODE_EMPTY = "bankAssociatedCode 不能为空！";
+
+    public final static String BANK_FULL_NAME_EMPTY = "bankFullName 不能为空！";
+
+    public final static String CARD_TYPE_EMPTY = "cardType 不能为空！";
+
+    public final static String ACCOUNT_TYPE_EMPTY = "accountType 不能为空！";
+
+    public final static String ACCOUNT_NO_EMPTY = "accountNo 不能为空！";
+
     public static enum CHANNEL_TYPE {
         WX,
         WX_APP,

@@ -23,15 +23,7 @@ import javax.ws.rs.core.Response;
 
 import cn.beecloud.BCEumeration.PAY_CHANNEL;
 import cn.beecloud.BCEumeration.RESULT_TYPE;
-import cn.beecloud.bean.BCBatchRefund;
-import cn.beecloud.bean.BCException;
-import cn.beecloud.bean.BCInternationlOrder;
-import cn.beecloud.bean.BCOrder;
-import cn.beecloud.bean.BCQueryParameter;
-import cn.beecloud.bean.BCRefund;
-import cn.beecloud.bean.ALITransferData;
-import cn.beecloud.bean.TransferParameter;
-import cn.beecloud.bean.TransfersParameter;
+import cn.beecloud.bean.*;
 import net.sf.json.JSONObject;
 
 
@@ -85,6 +77,21 @@ public class BCPay {
         placeOrder(order, ret);
 
         return order;
+    }
+
+    /**
+     * 代付接口
+     *
+     * @param bcTransferParameter
+     * {@link BCTransferParameter} (必填) 支付参数
+     * @return 调起BeeCloud代付后的返回结果
+     * @throws BCException
+     */
+    public static void startBCTransfer(BCTransferParameter bcTransferParameter) throws BCException {
+        ValidationUtil.validateBCTransfer(bcTransferParameter);
+        Map<String, Object> param = new HashMap<String, Object>();
+        buildBCTransferParam(param, bcTransferParameter);
+        doPost(BCUtilPrivate.getkApiBCTransfer(), param);
     }
 
     /**
@@ -158,8 +165,8 @@ public class BCPay {
         param.put("timestamp", System.currentTimeMillis());
         StringBuilder urlSb = new StringBuilder();
         if (BCCache.isSandbox()) {
-            param.put("app_sign", BCUtilPrivate
-                    .getAppSignatureWithTestSecret(StrUtil.toStr(param.get("timestamp"))));
+            param.put("app_sign", BCUtilPrivate.getAppSignatureWithTestSecret(StrUtil.toStr(param
+                    .get("timestamp"))));
             urlSb.append(BCUtilPrivate.getkApiSandboxQueryBillById());
         } else {
             param.put("app_sign",
@@ -286,8 +293,7 @@ public class BCPay {
      * @return 退款状态更新返回结果，包括（SUCCESS， PROCESSING, FAIL...）
      * @throws BCException
      */
-    public static String startRefundUpdate(PAY_CHANNEL channel, String refundNo)
-            throws BCException {
+    public static String startRefundUpdate(PAY_CHANNEL channel, String refundNo) throws BCException {
 
         checkTestModeSwitch();
 
@@ -439,8 +445,8 @@ public class BCPay {
         param.put("app_id", BCCache.getAppID());
         param.put("timestamp", System.currentTimeMillis());
         if (BCCache.isSandbox()) {
-            param.put("app_sign", BCUtilPrivate
-                    .getAppSignatureWithTestSecret(StrUtil.toStr(param.get("timestamp"))));
+            param.put("app_sign", BCUtilPrivate.getAppSignatureWithTestSecret(StrUtil.toStr(param
+                    .get("timestamp"))));
         } else {
             param.put("app_sign",
                     BCUtilPrivate.getAppSignature(StrUtil.toStr(param.get("timestamp"))));
@@ -480,14 +486,45 @@ public class BCPay {
     }
 
     /**
+     * 构建BC代付rest api参数
+     */
+    private static void buildBCTransferParam(Map<String, Object> param, BCTransferParameter para) {
+
+        param.put("app_id", BCCache.getAppID());
+        param.put("timestamp", System.currentTimeMillis());
+        if (BCCache.isSandbox()) {
+            param.put("app_sign", BCUtilPrivate.getAppSignatureWithTestSecret(StrUtil.toStr(param
+                    .get("timestamp"))));
+        } else {
+            param.put("app_sign",
+                    BCUtilPrivate.getAppSignature(StrUtil.toStr(param.get("timestamp"))));
+        }
+        param.put("total_fee", para.getTotalFee());
+        param.put("bill_no", para.getBillNo());
+        param.put("title", para.getTitle());
+        param.put("trade_source", para.getTradeSource());
+        param.put("bank_code", para.getBankCode());
+        param.put("bank_associated_code", para.getBankAssociatedCode());
+        param.put("bank_fullname", para.getBankFullName());
+        param.put("card_type", para.getCardType());
+        param.put("account_type", para.getAccountType());
+        param.put("account_no", para.getAccountNo());
+        param.put("account_name", para.getAccountName());
+        if (!StrUtil.empty(para.getMobile()))
+            param.put("mobile", para.getBankFullName());
+        param.put("optional", para.getOptional());
+
+    }
+
+    /**
      * 构建退款rest api参数
      */
     private static void buildRefundParam(Map<String, Object> param, BCRefund para) {
 
         param.put("app_id", BCCache.getAppID());
         param.put("timestamp", System.currentTimeMillis());
-        param.put("app_sign", BCUtilPrivate
-                .getAppSignatureWithMasterSecret(StrUtil.toStr(param.get("timestamp"))));
+        param.put("app_sign", BCUtilPrivate.getAppSignatureWithMasterSecret(StrUtil.toStr(param
+                .get("timestamp"))));
         param.put("refund_no", para.getRefundNo());
         param.put("bill_no", para.getBillNo());
         param.put("refund_fee", para.getRefundFee());
@@ -509,8 +546,8 @@ public class BCPay {
         param.put("app_id", BCCache.getAppID());
         param.put("timestamp", System.currentTimeMillis());
         if (BCCache.isSandbox()) {
-            param.put("app_sign", BCUtilPrivate
-                    .getAppSignatureWithTestSecret(StrUtil.toStr(param.get("timestamp"))));
+            param.put("app_sign", BCUtilPrivate.getAppSignatureWithTestSecret(StrUtil.toStr(param
+                    .get("timestamp"))));
         } else {
             param.put("app_sign",
                     BCUtilPrivate.getAppSignature(StrUtil.toStr(param.get("timestamp"))));
@@ -555,8 +592,8 @@ public class BCPay {
         param.put("app_id", BCCache.getAppID());
         param.put("timestamp", System.currentTimeMillis());
         if (BCCache.isSandbox()) {
-            param.put("app_sign", BCUtilPrivate
-                    .getAppSignatureWithTestSecret(StrUtil.toStr(param.get("timestamp"))));
+            param.put("app_sign", BCUtilPrivate.getAppSignatureWithTestSecret(StrUtil.toStr(param
+                    .get("timestamp"))));
         } else {
             param.put("app_sign",
                     BCUtilPrivate.getAppSignature(StrUtil.toStr(param.get("timestamp"))));
@@ -616,8 +653,8 @@ public class BCPay {
     private static void buildTransferParam(Map<String, Object> param, TransferParameter para) {
         param.put("app_id", BCCache.getAppID());
         param.put("timestamp", System.currentTimeMillis());
-        param.put("app_sign", BCUtilPrivate
-                .getAppSignatureWithMasterSecret(StrUtil.toStr(param.get("timestamp"))));
+        param.put("app_sign", BCUtilPrivate.getAppSignatureWithMasterSecret(StrUtil.toStr(param
+                .get("timestamp"))));
         param.put("channel", StrUtil.toStr(para.getChannel()));
         param.put("transfer_no", para.getTransferNo());
         param.put("total_fee", para.getTotalFee());
@@ -644,8 +681,8 @@ public class BCPay {
     private static void buildTransfersParam(Map<String, Object> param, TransfersParameter para) {
         param.put("app_id", BCCache.getAppID());
         param.put("timestamp", System.currentTimeMillis());
-        param.put("app_sign", BCUtilPrivate
-                .getAppSignatureWithMasterSecret(StrUtil.toStr(param.get("timestamp"))));
+        param.put("app_sign", BCUtilPrivate.getAppSignatureWithMasterSecret(StrUtil.toStr(param
+                .get("timestamp"))));
         param.put("channel", StrUtil.toStr(para.getChannel()));
         param.put("batch_no", para.getBatchNo());
         param.put("account_name", para.getAccountName());
@@ -722,8 +759,8 @@ public class BCPay {
             bcOrder.setChannelTradeNo(StrUtil.toStr(bill.get("trade_no")));
         }
         bcOrder.setOptionalString(StrUtil.toStr(bill.get("optional")));
-        bcOrder.setDateTime(
-                BCUtilPrivate.transferDateFromLongToString((Long) bill.get("create_time")));
+        bcOrder.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long) bill
+                .get("create_time")));
         if (bill.containsKey("message_detail")) {
             bcOrder.setMessageDetail(StrUtil.toStr(bill.get("message_detail")));
         }
@@ -739,8 +776,8 @@ public class BCPay {
         bcRefund.setBillNo(StrUtil.toStr(refund.get("bill_no")));
         bcRefund.setChannel(PAY_CHANNEL.valueOf(StrUtil.toStr(refund.get("sub_channel"))));
         bcRefund.setFinished((Boolean) refund.get("finish"));
-        bcRefund.setDateTime(
-                BCUtilPrivate.transferDateFromLongToString((Long) refund.get("create_time")));
+        bcRefund.setDateTime(BCUtilPrivate.transferDateFromLongToString((Long) refund
+                .get("create_time")));
         bcRefund.setOptionalString(StrUtil.toStr(refund.get("optional")));
         bcRefund.setRefunded((Boolean) refund.get("result"));
         bcRefund.setTitle(StrUtil.toStr(refund.get("title")));
@@ -785,8 +822,8 @@ public class BCPay {
         }
         WebTarget target = client.target(url);
         try {
-            Response response = target.request()
-                    .post(Entity.entity(param, MediaType.APPLICATION_JSON));
+            Response response = target.request().post(
+                    Entity.entity(param, MediaType.APPLICATION_JSON));
             if (response.getStatus() == 200) {
                 Map<String, Object> ret = response.readEntity(Map.class);
 
@@ -808,8 +845,8 @@ public class BCPay {
             if (e instanceof BCException) {
                 throw (BCException) e;
             }
-            throw new BCException(-2, RESULT_TYPE.OTHER_ERROR.name(),
-                    NETWORK_ERROR + "," + e.getMessage());
+            throw new BCException(-2, RESULT_TYPE.OTHER_ERROR.name(), NETWORK_ERROR + ","
+                    + e.getMessage());
         }
     }
 
@@ -831,8 +868,8 @@ public class BCPay {
         }
         WebTarget target = client.target(url);
         try {
-            Response response = target.request()
-                    .put(Entity.entity(param, MediaType.APPLICATION_JSON));
+            Response response = target.request().put(
+                    Entity.entity(param, MediaType.APPLICATION_JSON));
             if (response.getStatus() == 200) {
                 Map<String, Object> ret = response.readEntity(Map.class);
 

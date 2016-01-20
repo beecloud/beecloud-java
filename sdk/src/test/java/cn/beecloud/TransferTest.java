@@ -2,9 +2,12 @@ package cn.beecloud;
 
 import static junit.framework.Assert.assertEquals;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.beecloud.bean.*;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.StrictExpectations;
@@ -13,9 +16,6 @@ import org.junit.Assert;
 
 import cn.beecloud.BCEumeration.RESULT_TYPE;
 import cn.beecloud.BCEumeration.TRANSFER_CHANNEL;
-import cn.beecloud.bean.BCException;
-import cn.beecloud.bean.RedpackInfo;
-import cn.beecloud.bean.TransferParameter;
 
 
 /**
@@ -40,6 +40,8 @@ public class TransferTest {
     static RedpackInfo redpackInfo = new RedpackInfo();
     static String validWXTransferNo = "1234567890";
     static Integer validWXRedpackTotalFee = 200;
+    static String billNo = BCUtil.generateRandomUUIDPure();
+    static String subject = "javasdk unit test";
 
     static {
         redpackInfo.setActivityName(activityName);
@@ -354,7 +356,7 @@ public class TransferTest {
                     ex.getMessage().contains(TestConstant.TRANSFER_ACCOUNT_NAME_EMPTY));
         }
         param.setAccountName(accountName);
-        //mock网络请求
+        // mock网络请求
         mockTransfer(param);
     }
 
@@ -442,4 +444,182 @@ public class TransferTest {
         param.setTotalFee(totalFee);
         param.setTransferNo(transferNo);
     }
+
+    static void testBCTransfer() {
+        BCTransferParameter param = new BCTransferParameter();
+
+        /*-------------------------start transfer param test------------------------*/
+        try {
+            BCPay.startBCTransfer(null);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestConstant.PAY_PARAM_EMPTY));
+        }
+
+        try {
+            param.setBillNo(null);
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestConstant.BILL_NO_EMPTY));
+        }
+        param.setBillNo(billNo);
+
+        try {
+            param.setTitle(null);
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestConstant.TITLE_EMPTY));
+        }
+        param.setTitle(subject);
+
+        try {
+            param.setTotalFee(null);
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestConstant.TOTAL_FEE_EMPTY));
+        }
+        param.setTotalFee(1);
+        //
+        try {
+            param.setBillNo("121");
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(TestConstant.BILL_NO_FORMAT_INVALID));
+        }
+
+        try {
+            param.setBillNo("111111111122222222222222222222222222222222222222");
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(TestConstant.BILL_NO_FORMAT_INVALID));
+        }
+        param.setBillNo(billNo);
+
+        try {
+            param.setTradeSource(null);
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(TestConstant.TRADE_SOURCE_EMPTY));
+        }
+
+        param.setTradeSource("OUT_PC");
+
+        try {
+            param.setBankCode(null);
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestConstant.BANK_CODE_EMPTY));
+        }
+        param.setBankCode("BOC");
+
+        try {
+            param.setBankAssociatedCode(null);
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(TestConstant.BANK_ASSOCIATED_CODE_EMPTY));
+        }
+        param.setBankAssociatedCode("111111");
+
+        try {
+            param.setBankFullName(null);
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(TestConstant.BANK_FULL_NAME_EMPTY));
+        }
+        param.setBankFullName("中国银行");
+
+        try {
+            param.setCardType(null);
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestConstant.CARD_TYPE_EMPTY));
+        }
+        param.setCardType("DE");
+
+        try {
+            param.setAccountType(null);
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(TestConstant.ACCOUNT_TYPE_EMPTY));
+        }
+        param.setAccountType("P");
+
+        try {
+            param.setAccountNo(null);
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(), e.getMessage()
+                    .contains(TestConstant.ACCOUNT_NO_EMPTY));
+        }
+        param.setAccountNo("123456789");
+        try {
+            param.setAccountName(null);
+            BCPay.startBCTransfer(param);
+            Assert.fail(TestConstant.ASSERT_MESSAGE_BCEXCEPTION_NOT_THROWN);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage(), e instanceof BCException);
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(RESULT_TYPE.PARAM_INVALID.name()));
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains(TestConstant.ACCOUNT_NAME_EMPTY));
+        }
+    }
+
 }
