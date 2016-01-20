@@ -896,6 +896,31 @@ refundNo | 商户退款单号， 格式为:退款日期(8位) + 流水号(3~24 �
 channel | 渠道类型， 包含WX、YEE、KUAIQIAN和BD（必填）
 <br>
 
+### <a name="BCTransfer">BC代付</a>
+发起代付请求。BCTransferParameter对象包含了发起BC代付所需要的所有参数。
+发起BC代付异常情况将抛出BCException, 开发者需要捕获此异常进行相应失败操作 开发者可根据异常消息判断异常的具体信息，异常信息的格式为<mark>"resultCode:xxx;resultMsg:xxx;errDetail:xxx"</mark>。
+```java
+BCTransferParameter param = new BCTransferParameter();
+param.setBillNo("1111111111");//设置订单号 8到32位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复
+param.setTitle("subject");//设置标题 UTF8编码格式，32个字节内，最长支持16个汉字
+param.setTotalFee(1);//设置下发订单总金额 必须是正整数，单位为分
+param.setTradeSource("OUT_PC");//UTF8编码格式，目前只能填写OUT_PC
+param.setBankCode("BOC");//设置银行缩写，BOC代表中国银行
+param.setBankAssociatedCode("111111");//设置银行联行行号，该值需要用户自己去查询
+param.setBankFullName("中国银行");//银行全称，不能缩写
+param.setCardType("DE");//卡类型 DE代表借记卡，CR代表信用卡，其他值为非法
+param.setAccountType("P");//账户类型 区分对公和对私 P代表私户，C代表公户，其他值为非法
+param.setAccountNo("123456789");//收款方的银行卡号
+param.setAccountName("beecloud");//收款方的姓名或者单位名
+try {
+	BCPay.startBCTransfer(param);
+}
+ catch (Exception e) {
+	out.println(ex.getMessage());
+	og.info(ex.getMessage());
+}		
+```
+
 ## SANDBOX模式部分
 
 ### <a name="sandboxPayment">国内支付</a>
